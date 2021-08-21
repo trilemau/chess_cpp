@@ -1,103 +1,4 @@
-#include "enums.hpp"
-
-#include <iostream>
-#include <array>
-#include <vector>
-#include <memory>
-#include <exception>
-
-// Using SDL and standard IO
-#include <SDL.h>
-#include <SDL_image.h>
-#include <stdio.h>
-
-// Screen size
-constexpr int SCREEN_WIDTH = 640;
-constexpr int SCREEN_HEIGHT = 640;
-
-// Board size
-constexpr int BOARD_HEIGHT = 8;
-constexpr int BOARD_WIDTH = 8;
-
-constexpr int POSITION_HEIGHT = SCREEN_HEIGHT / BOARD_HEIGHT;
-constexpr int POSITION_WIDTH = SCREEN_WIDTH / BOARD_WIDTH;
-
-// Other constants
-constexpr int INVALID_VALUE = -1;
-
-using std::string;
-using std::array;
-using std::vector;
-using std::unique_ptr;
-
-struct Position
-{
-    int x = INVALID_VALUE;
-    int y = INVALID_VALUE;
-};
-
-class Piece
-{
-    PieceType type_;
-public:
-    virtual std::vector<unique_ptr<Position>> LegalMoves(const Position& position) const = 0;
-
-    virtual ~Piece() = 0;
-};
-
-class King : public Piece
-{
-public:
-    std::vector<unique_ptr<Position>> LegalMoves(const Position& position) const override;
-
-};
-
-class Board
-{
-    array<array<unique_ptr<Piece>, BOARD_HEIGHT>, BOARD_HEIGHT> board_;
-    Position current_position_;
-
-public:
-    const auto& getBoard() const
-    {
-        return board_;
-    }
-
-    auto& getBoard()
-    {
-        return board_;
-    }
-
-    const Piece& GetPiece(const Position& position) const
-    {
-        if (board_[position.x][position.y] == nullptr)
-        {
-            throw std::runtime_error("invalid position");
-        }
-
-        return *board_[position.x][position.y].get();
-    }
-
-    Piece& GetPiece(const Position& position)
-    {
-        if (board_[position.x][position.y] == nullptr)
-        {
-            throw std::runtime_error("invalid position");
-        }
-
-        return *board_[position.x][position.y].get();
-    }
-
-    const Position& GetCurrentPosition() const
-    {
-        return current_position_;
-    }
-
-    Position& GetCurrentPosition()
-    {
-        return current_position_;
-    }
-};
+#include "libs.hpp"
 
 int main()
 {
@@ -110,7 +11,7 @@ int main()
     //(or undefined x and y positions), with dimensions of 800 px width
     //and 600 px height and force it to be shown on screen
     SDL_Window* window = SDL_CreateWindow("Getting Started", SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 
     if (window == nullptr)
     {
