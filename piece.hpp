@@ -6,28 +6,21 @@
 
 class Piece
 {
-    SDL_Texture* texture_;
-    bool initialized_;
-
-protected:
-    PieceType type_;
+    PieceType piece_type_;
     Position position_;
+    SDL_Texture* texture_;
 
 public:
-    Piece();
-    Piece(SDL_Renderer* renderer, string_view texture_filename);
+    Piece(PieceType piece_type);
+    Piece(PieceType piece_type, SDL_Renderer* renderer, const string& texture_filename);
     virtual ~Piece();
 
+    PieceType GetPieceType() const;
+
+    const Position& GetPosition() const;
     void SetPosition(const Position& position);
 
+    SDL_Texture* GetTexture();
+
     virtual std::vector<Position> LegalMoves() const = 0;
-};
-
-class King : public Piece
-{
-public:
-    King();
-    King(SDL_Renderer* renderer, string_view texture_filename);
-
-    std::vector<Position> LegalMoves() const override;
 };

@@ -20,8 +20,9 @@ using std::string_view;
 using std::array;
 using std::vector;
 using std::unique_ptr;
+using std::shared_ptr;
 
-// cccheck todo seperate constant file
+// cccheck TODO seperate constant file
 // Other constants
 
 // WINDOW properties
@@ -40,3 +41,5 @@ constexpr int INVALID_VALUE = -1;
 
 // Texture files
 constexpr const char* BLACK_KING = "b_king_png_shadow_1024px.png";
+
+// TODO refactor this files and libs.hpp includes

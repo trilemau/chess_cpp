@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "piece.hpp"
+#include "king.hpp"
 
 void CompareMoves(const vector<Position>& moves, const vector<Position>& expected)
 {
