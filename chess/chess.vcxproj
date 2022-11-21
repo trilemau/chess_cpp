@@ -126,7 +126,7 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /s /i $(ProjectDir)..\images  $(ProjectDir)images</Command>
+      <Command>xcopy /y /s /i $(ProjectDir)..\src\images  $(ProjectDir)images</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
