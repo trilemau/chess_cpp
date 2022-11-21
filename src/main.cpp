@@ -1,7 +1,23 @@
 #include "libs.hpp"
 
 #include "renderer.hpp"
+
 #include "king.hpp"
+#include "queen.hpp"
+#include "rook.hpp"
+#include "bishop.hpp"
+#include "knight.hpp"
+#include "pawn.hpp"
+
+#define BOARD_COLOR_LIGHT_R 124
+#define BOARD_COLOR_LIGHT_G 76
+#define BOARD_COLOR_LIGHT_B 62
+
+#define BOARD_COLOR_DARK_R 81
+#define BOARD_COLOR_DARK_G 42
+#define BOARD_COLOR_DARK_B 42
+
+#define ALPHA_COLOR 255
 
 int main()
 {
@@ -36,20 +52,31 @@ int main()
     SDL_RenderPresent(renderer);
 
     auto black_king = std::make_shared<King>(renderer, "images/b_king_png_shadow_1024px.png");
+    auto black_queen = std::make_shared<Queen>(renderer, "images/b_queen_png_shadow_1024px.png");
+    auto black_rook = std::make_shared<Rook>(renderer, "images/b_rook_png_shadow_1024px.png");
+    auto black_bishop = std::make_shared<Bishop>(renderer, "images/b_bishop_png_shadow_1024px.png");
+    auto black_knight = std::make_shared<Knight>(renderer, "images/b_knight_png_shadow_1024px.png");
+    auto black_pawn = std::make_shared<Pawn>(renderer, "images/b_pawn_png_shadow_1024px.png");
+
     auto white_king = std::make_shared<King>(renderer, "images/w_king_png_shadow_1024px.png");
+    auto white_queen = std::make_shared<Queen>(renderer, "images/w_queen_png_shadow_1024px.png");
+    auto white_rook = std::make_shared<Rook>(renderer, "images/w_rook_png_shadow_1024px.png");
+    auto white_bishop = std::make_shared<Bishop>(renderer, "images/w_bishop_png_shadow_1024px.png");
+    auto white_knight = std::make_shared<Knight>(renderer, "images/w_knight_png_shadow_1024px.png");
+    auto white_pawn = std::make_shared<Pawn>(renderer, "images/w_pawn_png_shadow_1024px.png");
 
     auto texture = IMG_LoadTexture(renderer, "images/w_king_png_shadow_1024px.png");
 
     vector<vector<shared_ptr<Piece>>> board
     {
-        { black_king, black_king, black_king, black_king, black_king, black_king, black_king, black_king },
-        { black_king, black_king, black_king, black_king, black_king, black_king, black_king, black_king },
+        { black_rook, black_knight, black_bishop, black_queen, black_king, black_bishop, black_knight, black_rook },
+        { black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn },
         { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
         { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
         { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
         { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
-        { white_king, white_king, white_king, white_king, white_king, white_king, white_king, white_king },
-        { white_king, white_king, white_king, white_king, white_king, white_king, white_king, white_king }
+        { white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn },
+        { black_rook, white_knight, black_bishop, white_queen, white_king, black_bishop, white_knight, black_rook }
     };
 
     try
@@ -100,13 +127,13 @@ int main()
                     // Piece background
                     if ((column + row) % 2 == 0)
                     {
-                        // White color
-                        error = SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        // Light
+                        error = SDL_SetRenderDrawColor(renderer, BOARD_COLOR_LIGHT_R, BOARD_COLOR_LIGHT_G, BOARD_COLOR_LIGHT_B, ALPHA_COLOR);
                     }
                     else
                     {
-                        // Black color
-                        error = SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                        // Dark
+                        error = SDL_SetRenderDrawColor(renderer, BOARD_COLOR_DARK_R, BOARD_COLOR_DARK_G, BOARD_COLOR_DARK_B, ALPHA_COLOR);
                     }
 
                     if (error)
