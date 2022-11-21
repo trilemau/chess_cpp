@@ -6,11 +6,13 @@
 #include <vector>
 #include <memory>
 #include <exception>
+#include <string>
 
 // Custom libraries
 #include "enums.hpp"
 
 // SDL
+#define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <SDL_image.h>
 

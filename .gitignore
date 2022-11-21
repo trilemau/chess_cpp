@@ -33,3 +33,10 @@
 
 # CMakeLists user
 CMakeLists.txt.user
+
+# Images
+
+# Visual Studio files
+.vs
+chess/x64/Debug
+chess/images
