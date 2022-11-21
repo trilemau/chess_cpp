@@ -14,8 +14,25 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
-set(SOURCES bishop.cpp board.cpp game.cpp king.cpp knight.cpp pawn.cpp piece.cpp position.cpp queen.cpp renderer.cpp rook.cpp texture.cpp)
-set(TEST_SOURCES test-chess.cpp test-main.cpp)
+set(SOURCES
+    bishop.cpp
+    board.cpp
+    game.cpp
+    king.cpp
+    knight.cpp
+    pawn.cpp
+    piece.cpp
+    position.cpp
+    queen.cpp
+    renderer.cpp
+    rook.cpp
+    texture.cpp
+    )
+
+set(TEST_SOURCES
+    test-chess.cpp
+    test-main.cpp
+    )
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
