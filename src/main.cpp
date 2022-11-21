@@ -38,6 +38,8 @@ int main()
     auto black_king = std::make_shared<King>(renderer, "images/b_king_png_shadow_1024px.png");
     auto white_king = std::make_shared<King>(renderer, "images/w_king_png_shadow_1024px.png");
 
+    auto texture = IMG_LoadTexture(renderer, "images/w_king_png_shadow_1024px.png");
+
     vector<vector<shared_ptr<Piece>>> board
     {
         { black_king, black_king, black_king, black_king, black_king, black_king, black_king, black_king },
@@ -50,74 +52,107 @@ int main()
         { white_king, white_king, white_king, white_king, white_king, white_king, white_king, white_king }
     };
 
-    SDL_Event e;
-    bool quit = false;
-    while (!quit){
-        while (SDL_PollEvent(&e)){
+    try
+    {
+        SDL_Event e;
+        int error = 0;
+        bool quit = false;
+        while (!quit) {
+            while (SDL_PollEvent(&e)) {
 
-            if (e.type == SDL_QUIT)
-            {
-                std::cout << "Window closed, quitting...\n";
-                quit = true;
+                if (e.type == SDL_QUIT)
+                {
+                    std::cout << "Window closed, quitting...\n";
+                    quit = true;
+                }
+
+                if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+                {
+                    std::cout << "ESC pressed, quitting...\n";
+                    quit = true;
+                }
+
+                if (e.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    std::cout << "mouse button pressed\n";
+                }
+
+                if (e.type == SDL_MOUSEBUTTONUP)
+                {
+                    std::cout << "mouse button released\n";
+                }
+
+                std::cout << std::flush;
             }
 
-            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+            SDL_Rect rectangle;
+
+            // Render chess board
+            for (auto column = 0; column < BOARD_WIDTH; column++)
             {
-                std::cout << "ESC pressed, quitting...\n";
-                quit = true;
+                for (auto row = 0; row < BOARD_HEIGHT; row++)
+                {
+                    //// draw white positions only - BG is already black
+                    //if ((column + row) % 2 == 0)
+                    //{
+                    //    rectangle.x = column * POSITION_WIDTH;
+                    //    rectangle.y = row * POSITION_HEIGHT;
+                    //    rectangle.h = POSITION_HEIGHT;
+                    //    rectangle.w = POSITION_WIDTH;
+                        //SDL_RenderFillRect(renderer, &rectangle);
+                        //SDL_RenderCopy(renderer, texture, nullptr, &rectangle);
+                    //}
+
+                    rectangle.x = column * POSITION_WIDTH;
+                    rectangle.y = row * POSITION_HEIGHT;
+                    rectangle.h = POSITION_HEIGHT;
+                    rectangle.w = POSITION_WIDTH;
+
+                    // Piece background
+                    if ((column + row) % 2 == 0)
+                    {
+                        // White color
+                        error = SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                    }
+                    else
+                    {
+                        // Black color
+                        error = SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                    }
+
+                    if (error)
+                    {
+                        throw std::runtime_error(SDL_GetError());
+                    }
+
+                    error = SDL_RenderFillRect(renderer, &rectangle);
+
+                    if (error)
+                    {
+                        throw std::runtime_error(SDL_GetError());
+                    }
+
+                    // Piece
+                    const auto& piece = board[row][column];
+                    if (piece != nullptr)
+                    {
+                        error = SDL_RenderCopy(renderer, piece->GetTexture(), nullptr, &rectangle);
+
+                        if (error)
+                        {
+                            throw std::runtime_error(SDL_GetError());
+                        }
+                    }
+                }
             }
 
-            if (e.type == SDL_MOUSEBUTTONDOWN)
-            {
-                std::cout << "mouse button pressed\n";
-            }
-
-            if (e.type == SDL_MOUSEBUTTONUP)
-            {
-                std::cout << "mouse button released\n";
-            }
-
-            std::cout << std::flush;
+            // Render frame
+            SDL_RenderPresent(renderer);
         }
-
-        SDL_Rect rectangle;
-
-        // Render chess board
-        for (auto column = 0; column < BOARD_WIDTH; column++)
-        {
-            for (auto row = 0; row < BOARD_HEIGHT; row++)
-            {
-                rectangle.x = column * POSITION_WIDTH;
-                rectangle.y = row * POSITION_HEIGHT;
-                rectangle.h = POSITION_HEIGHT;
-                rectangle.w = POSITION_WIDTH;
-
-                // Piece background
-                if ((column + row) % 2 == 0)
-                {
-                    // White color
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                }
-                else
-                {
-                    // Black color
-                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-                }
-
-                // Piece
-                const auto& piece = board[row][column];
-                if (piece != nullptr)
-                {
-                    SDL_RenderCopy(renderer, piece->GetTexture(), nullptr, &rectangle);
-                }
-
-                // Render chess board
-                SDL_RenderFillRect(renderer, &rectangle);
-            }
-        }
-
-        // Render frame
-        SDL_RenderPresent(renderer);
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Unexpected exception=" << e.what() << '\n';
     }
 
     // Destroy the window created above

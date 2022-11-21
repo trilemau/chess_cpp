@@ -40,3 +40,4 @@ CMakeLists.txt.user
 .vs
 chess/x64/Debug
 chess/images
+chess_test/x64/Debug
