@@ -92,17 +92,6 @@ int main()
             {
                 for (auto row = 0; row < BOARD_HEIGHT; row++)
                 {
-                    //// draw white positions only - BG is already black
-                    //if ((column + row) % 2 == 0)
-                    //{
-                    //    rectangle.x = column * POSITION_WIDTH;
-                    //    rectangle.y = row * POSITION_HEIGHT;
-                    //    rectangle.h = POSITION_HEIGHT;
-                    //    rectangle.w = POSITION_WIDTH;
-                        //SDL_RenderFillRect(renderer, &rectangle);
-                        //SDL_RenderCopy(renderer, texture, nullptr, &rectangle);
-                    //}
-
                     rectangle.x = column * POSITION_WIDTH;
                     rectangle.y = row * POSITION_HEIGHT;
                     rectangle.h = POSITION_HEIGHT;
