@@ -19,6 +19,8 @@
 
 #define ALPHA_COLOR 255
 
+#define SDL_NO_ERROR 0
+
 int main()
 {
     std::cout << "Game started...\n";
@@ -34,6 +36,7 @@ int main()
 
     if (window == nullptr)
     {
+        std::cerr << "Failed to initialize window=" << SDL_GetError();
         return EXIT_FAILURE;
     }
 
@@ -66,6 +69,21 @@ int main()
     auto white_pawn = std::make_shared<Pawn>(renderer, "images/w_pawn_png_shadow_1024px.png");
 
     auto texture = IMG_LoadTexture(renderer, "images/w_king_png_shadow_1024px.png");
+
+    // Initialize audio
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != SDL_NO_ERROR) // TODO values to macro
+    {
+        std::cerr << "Failed to initialize audio=" << Mix_GetError();
+        return EXIT_FAILURE;
+    }
+
+    Mix_Music* piece_move_sfx = Mix_LoadMUS("sounds/piece_move.mp3");
+
+    if (piece_move_sfx == nullptr)
+    {
+        std::cerr << "Failed to load sfx=" << Mix_GetError();
+        return EXIT_FAILURE;
+    }
 
     vector<vector<shared_ptr<Piece>>> board
     {
@@ -106,6 +124,8 @@ int main()
 
                 if (e.type == SDL_MOUSEBUTTONUP)
                 {
+                    Mix_PlayMusic(piece_move_sfx, 0); // TODO to macro
+
                     std::cout << "mouse button released\n";
                 }
 
@@ -171,11 +191,16 @@ int main()
         std::cerr << "Unexpected exception=" << e.what() << '\n';
     }
 
+    // Destroy audio
+    Mix_FreeMusic(piece_move_sfx);
+
     // Destroy the window created above
     SDL_DestroyWindow(window);
 
     // Close all the systems of SDL initialized at the top
     SDL_Quit();
+    Mix_Quit();
+    IMG_Quit();
 
     return EXIT_SUCCESS;
 }

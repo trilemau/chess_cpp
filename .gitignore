@@ -40,6 +40,7 @@ CMakeLists.txt.user
 .vs
 chess/x64/Debug
 chess/images
+chess/sounds
 chess_test/x64/Debug
 
 # QT files
