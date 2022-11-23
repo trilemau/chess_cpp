@@ -132,27 +132,8 @@ void Game::startLoop()
 
 void Game::handleEvents()
 {
-    SDL_Event event;
-    SDL_PollEvent(&event);
-
-    switch (event.type)
-    {
-    case SDL_QUIT:
-        is_running_ = false;
-        break;
-    case SDL_MOUSEBUTTONDOWN:
-        is_running_ = false;
-        break;
-    default:
-        break;
-    }
-}
-
-void Game::update()
-{
     SDL_Event e;
     int error = 0;
-    bool quit = false;
 
     auto old_column_index = 0;
     auto old_row_index = 0;
@@ -160,56 +141,116 @@ void Game::update()
     auto new_column_index = 0;
     auto new_row_index = 0;
 
-    while (!quit) {
-        while (SDL_PollEvent(&e)) {
+    while (SDL_PollEvent(&e)) {
 
-            if (e.type == SDL_QUIT)
+        if (e.type == SDL_QUIT)
+        {
+            std::cout << "Window closed, quitting...\n";
+            is_running_ = false;
+        }
+
+        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+        {
+            std::cout << "ESC pressed, quitting...\n";
+            is_running_ = false;
+        }
+
+        if (e.type == SDL_MOUSEBUTTONDOWN)
+        {
+            if (e.button.button == SDL_BUTTON_LEFT)
             {
-                std::cout << "Window closed, quitting...\n";
-                quit = true;
+                old_column_index = e.button.x / POSITION_WIDTH;
+                old_row_index = e.button.y / POSITION_HEIGHT;
+                std::cout << "old=[" << old_column_index << ", " << old_row_index << "]" << '\n';
             }
+        }
 
-            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+        if (e.type == SDL_MOUSEBUTTONUP)
+        {
+            if (e.button.button == SDL_BUTTON_LEFT)
             {
-                std::cout << "ESC pressed, quitting...\n";
-                quit = true;
-            }
+                new_column_index = e.button.x / POSITION_WIDTH;
+                new_row_index = e.button.y / POSITION_HEIGHT;
+                std::cout << "new= [" << new_column_index << ", " << new_row_index << "]" << '\n';
 
-            if (e.type == SDL_MOUSEBUTTONDOWN)
-            {
-                if (e.button.button == SDL_BUTTON_LEFT)
+                if (CanMove(old_column_index, old_row_index, new_column_index, new_row_index))
                 {
-                    old_column_index = e.button.x / POSITION_WIDTH;
-                    old_row_index = e.button.y / POSITION_HEIGHT;
-                    std::cout << "old=[" << old_column_index << ", " << old_row_index << "]" << '\n';
-                }
-            }
+                    // Move piece
+                    board_[new_row_index][new_column_index] = std::move(board_[old_row_index][old_column_index]);
 
-            if (e.type == SDL_MOUSEBUTTONUP)
-            {
-                if (e.button.button == SDL_BUTTON_LEFT)
-                {
-                    new_column_index = e.button.x / POSITION_WIDTH;
-                    new_row_index = e.button.y / POSITION_HEIGHT;
-                    std::cout << "new= [" << new_column_index << ", " << new_row_index << "]" << '\n';
+                    error = Mix_PlayChannel(SOUND_PLAY_CHANNEL, move_piece_sfx_, SOUND_NO_REPEAT);
 
-                    if (CanMove(old_column_index, old_row_index, new_column_index, new_row_index))
+                    if (error == SOUND_ERROR)
                     {
-                        // Move piece
-                        board_[new_row_index][new_column_index] = std::move(board_[old_row_index][old_column_index]);
-
-                        error = Mix_PlayChannel(SOUND_PLAY_CHANNEL, move_piece_sfx_, SOUND_NO_REPEAT);
-
-                        if (error == SOUND_ERROR)
-                        {
-                            throw std::runtime_error(Mix_GetError());
-                        }
+                        throw std::runtime_error(Mix_GetError());
                     }
                 }
             }
-
-            std::cout << std::flush;
         }
+
+        std::cout << std::flush;
+    }
+}
+
+void Game::update()
+{
+    int error = 0;
+
+//    SDL_Event e;
+//    bool quit = false;
+
+    while (is_running_) {
+//        while (SDL_PollEvent(&e)) {
+
+//            if (e.type == SDL_QUIT)
+//            {
+//                std::cout << "Window closed, quitting...\n";
+//                quit = true;
+//            }
+
+//            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+//            {
+//                std::cout << "ESC pressed, quitting...\n";
+//                quit = true;
+//            }
+
+//            if (e.type == SDL_MOUSEBUTTONDOWN)
+//            {
+//                if (e.button.button == SDL_BUTTON_LEFT)
+//                {
+//                    old_column_index = e.button.x / POSITION_WIDTH;
+//                    old_row_index = e.button.y / POSITION_HEIGHT;
+//                    std::cout << "old=[" << old_column_index << ", " << old_row_index << "]" << '\n';
+//                }
+//            }
+
+//            if (e.type == SDL_MOUSEBUTTONUP)
+//            {
+//                if (e.button.button == SDL_BUTTON_LEFT)
+//                {
+//                    new_column_index = e.button.x / POSITION_WIDTH;
+//                    new_row_index = e.button.y / POSITION_HEIGHT;
+//                    std::cout << "new= [" << new_column_index << ", " << new_row_index << "]" << '\n';
+
+//                    if (CanMove(old_column_index, old_row_index, new_column_index, new_row_index))
+//                    {
+//                        // Move piece
+//                        board_[new_row_index][new_column_index] = std::move(board_[old_row_index][old_column_index]);
+
+//                        error = Mix_PlayChannel(SOUND_PLAY_CHANNEL, move_piece_sfx_, SOUND_NO_REPEAT);
+
+//                        if (error == SOUND_ERROR)
+//                        {
+//                            throw std::runtime_error(Mix_GetError());
+//                        }
+//                    }
+//                }
+//            }
+
+//            std::cout << std::flush;
+//        }
+
+        handleEvents();
 
         SDL_Rect rectangle;
 
