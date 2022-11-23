@@ -1,5 +1,7 @@
 #include "libs.hpp"
 
+#include "game.hpp"
+
 #include "renderer.hpp"
 
 #include "king.hpp"
@@ -9,50 +11,13 @@
 #include "knight.hpp"
 #include "pawn.hpp"
 
-#define BOARD_COLOR_LIGHT_R 124
-#define BOARD_COLOR_LIGHT_G 76
-#define BOARD_COLOR_LIGHT_B 62
-
-#define BOARD_COLOR_DARK_R 81
-#define BOARD_COLOR_DARK_G 42
-#define BOARD_COLOR_DARK_B 42
-
-#define ALPHA_COLOR 255
-
-#define SDL_NO_ERROR 0
-
-#define SOUND_FREQUENCY 44100
-#define SOUND_CHANNELS 2
-#define SOUND_CHUNKS 2048
-#define SOUND_NO_REPEAT 0
-#define SOUND_PLAY_CHANNEL -1
-
-bool CanMove(int old_column_index, int old_row_index, int new_column_index, int new_row_index)
-{
-    // Check if the old and new position is the same
-    if (new_column_index == old_column_index && new_row_index == old_row_index)
-    {
-        return false;
-    }
-
-    // TODO
-    // Check if the new position is taken by the same color pieces
-
-
-    // TODO casltling
-    return true;
-}
-
 int main()
 {
+    /*
     std::cout << "Game started...\n";
 
-    //Initialize all the systems of SDL
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    //Create a window with a title, "Getting Started", in the centre
-    //(or undefined x and y positions), with dimensions of 800 px width
-    //and 600 px height and force it to be shown on screen
     SDL_Window* window = SDL_CreateWindow("Getting Started", SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 
@@ -67,14 +32,14 @@ int main()
     Renderer renderer_wrapper(window);
     SDL_Renderer* renderer = renderer_wrapper.GetRenderer();
 
-    //Set the draw color of renderer to black
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+//    //Set the draw color of renderer to black
+//    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
-    //Clear the renderer with the draw color
-    SDL_RenderClear(renderer);
+//    //Clear the renderer with the draw color
+//    SDL_RenderClear(renderer);
 
-    //Update the renderer which will show the renderer cleared by the draw color
-    SDL_RenderPresent(renderer);
+//    //Update the renderer which will show the renderer cleared by the draw color
+//    SDL_RenderPresent(renderer);
 
     // TODO
     // Renderer to singleton 
@@ -119,6 +84,9 @@ int main()
         { white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn },
         { white_rook, white_knight, white_bishop, white_queen, white_king, white_bishop, white_knight, white_rook }
     };
+
+    set<shared_ptr<Piece>> p1_pieces;
+    set<shared_ptr<Piece>> p2_pieces;
 
     SDL_Event e;
     int error = 0;
@@ -247,6 +215,16 @@ int main()
     SDL_Quit();
     Mix_Quit();
     IMG_Quit();
+    */
+
+    Game game;
+    game.initialize();
+
+    try {
+        game.update();
+    } catch (const std::exception& exception) {
+        std::cerr << "Unexpected exception=" << exception.what() << '\n';
+    }
 
     return EXIT_SUCCESS;
 }

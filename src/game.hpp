@@ -22,14 +22,16 @@ public:
     Game();
     ~Game();
 
-    void foo() { SDL_Init(SDL_INIT_EVERYTHING); }
+//    void foo() { SDL_Init(SDL_INIT_EVERYTHING); }
 
+    // TODO move to private methods
     bool isRunning() const;
-//    void initialize();
-//    void handleEvents();
+    bool initialize();
+    void startLoop();
+    void handleEvents();
     void update();
-//    void render();
-//    void destroyEverything();
+    void render();
+    void destroyEverything();
 
     const auto& getBoard() const;
     auto& getBoard();

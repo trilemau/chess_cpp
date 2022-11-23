@@ -58,4 +58,5 @@ target_link_libraries(${PROJECT_TESTS} ${SDL2_IMAGE_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${SDL2_IMAGE_LIBRARY})
 target_link_libraries(${PROJECT_TESTS} ${SDL2_IMAGE_LIBRARY})
 target_link_libraries(${PROJECT_NAME} ${SDL2_MIXER_LIBRARY})
+target_link_libraries(${PROJECT_TESTS} ${SDL2_MIXER_LIBRARY})
 
