@@ -25,6 +25,7 @@
 #define SOUND_CHANNELS 2
 #define SOUND_CHUNKS 2048
 #define SOUND_NO_REPEAT 0
+#define SOUND_PLAY_CHANNEL -1
 
 bool CanMove(int old_column_index, int old_row_index, int new_column_index, int new_row_index)
 {
@@ -99,7 +100,7 @@ int main()
         return EXIT_FAILURE;
     }
 
-    Mix_Music* piece_move_sfx = Mix_LoadMUS("sounds/piece_move.mp3");
+    Mix_Chunk* piece_move_sfx = Mix_LoadWAV("sounds/piece_move.wav");
 
     if (piece_move_sfx == nullptr)
     {
@@ -169,7 +170,7 @@ int main()
                             // Move piece
                             board[new_row_index][new_column_index] = std::move(board[old_row_index][old_column_index]);
 
-                            Mix_PlayMusic(piece_move_sfx, SOUND_NO_REPEAT);
+                            Mix_PlayChannel(SOUND_PLAY_CHANNEL, piece_move_sfx, SOUND_NO_REPEAT);
                         }
                     }
                 }
@@ -236,8 +237,8 @@ int main()
         std::cerr << "Unexpected exception=" << e.what() << '\n';
     }
 
-    // Destroy audio
-    Mix_FreeMusic(piece_move_sfx);
+    // Destroy audio sfx
+    Mix_FreeChunk(piece_move_sfx);
 
     // Destroy the window created above
     SDL_DestroyWindow(window);

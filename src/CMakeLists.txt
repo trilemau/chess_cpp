@@ -36,11 +36,17 @@ set(TEST_SOURCES
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(SDL2_mixer REQUIRED)
+
 include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${SDL2_IMAGE_INCLUDE_DIR})
 include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
+include_directories(${SDL2_MIXER_INCLUDE_DIR})
+include_directories(${SDL2_MIXER_INCLUDE_DIRS})
 
-file(COPY "images" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/") #otherwise we get chess without images
+# Images and sounds resources
+file(COPY "images" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
+file(COPY "sounds" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
 
 add_executable(${PROJECT_NAME} main.cpp ${SOURCES})
 add_executable(${PROJECT_TESTS} ${TEST_SOURCES} ${SOURCES})
@@ -51,4 +57,5 @@ target_link_libraries(${PROJECT_NAME} ${SDL2_IMAGE_LIBRARIES})
 target_link_libraries(${PROJECT_TESTS} ${SDL2_IMAGE_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${SDL2_IMAGE_LIBRARY})
 target_link_libraries(${PROJECT_TESTS} ${SDL2_IMAGE_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${SDL2_MIXER_LIBRARY})
 
