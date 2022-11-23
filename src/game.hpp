@@ -13,8 +13,9 @@ class Game
 
     SDL_Window* window_;
     SDL_Renderer* renderer_;
+    Mix_Chunk* move_piece_sfx_;
 
-    array<array<unique_ptr<Piece>, BOARD_HEIGHT>, BOARD_HEIGHT> board_;
+    vector<vector<shared_ptr<Piece>>> board_;
     Position current_position_;
 
 public:
