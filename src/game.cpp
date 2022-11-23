@@ -125,21 +125,10 @@ bool Game::initialize()
     return true;
 }
 
-void Game::startLoop()
-{
-    // TODO remove???
-}
-
 void Game::handleEvents()
 {
     SDL_Event e;
     int error = 0;
-
-    auto old_column_index = 0;
-    auto old_row_index = 0;
-
-    auto new_column_index = 0;
-    auto new_row_index = 0;
 
     while (SDL_PollEvent(&e)) {
 
@@ -169,8 +158,8 @@ void Game::handleEvents()
         {
             if (e.button.button == SDL_BUTTON_LEFT)
             {
-                new_column_index = e.button.x / POSITION_WIDTH;
-                new_row_index = e.button.y / POSITION_HEIGHT;
+                const auto new_column_index = e.button.x / POSITION_WIDTH;
+                const auto new_row_index = e.button.y / POSITION_HEIGHT;
                 std::cout << "new= [" << new_column_index << ", " << new_row_index << "]" << '\n';
 
                 if (CanMove(old_column_index, old_row_index, new_column_index, new_row_index))
@@ -194,125 +183,63 @@ void Game::handleEvents()
 
 void Game::update()
 {
+    handleEvents();
+    renderBoard();
+}
+
+void Game::renderBoard()
+{
+    SDL_Rect rectangle;
     int error = 0;
 
-//    SDL_Event e;
-//    bool quit = false;
-
-    while (is_running_) {
-//        while (SDL_PollEvent(&e)) {
-
-//            if (e.type == SDL_QUIT)
-//            {
-//                std::cout << "Window closed, quitting...\n";
-//                quit = true;
-//            }
-
-//            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
-//            {
-//                std::cout << "ESC pressed, quitting...\n";
-//                quit = true;
-//            }
-
-//            if (e.type == SDL_MOUSEBUTTONDOWN)
-//            {
-//                if (e.button.button == SDL_BUTTON_LEFT)
-//                {
-//                    old_column_index = e.button.x / POSITION_WIDTH;
-//                    old_row_index = e.button.y / POSITION_HEIGHT;
-//                    std::cout << "old=[" << old_column_index << ", " << old_row_index << "]" << '\n';
-//                }
-//            }
-
-//            if (e.type == SDL_MOUSEBUTTONUP)
-//            {
-//                if (e.button.button == SDL_BUTTON_LEFT)
-//                {
-//                    new_column_index = e.button.x / POSITION_WIDTH;
-//                    new_row_index = e.button.y / POSITION_HEIGHT;
-//                    std::cout << "new= [" << new_column_index << ", " << new_row_index << "]" << '\n';
-
-//                    if (CanMove(old_column_index, old_row_index, new_column_index, new_row_index))
-//                    {
-//                        // Move piece
-//                        board_[new_row_index][new_column_index] = std::move(board_[old_row_index][old_column_index]);
-
-//                        error = Mix_PlayChannel(SOUND_PLAY_CHANNEL, move_piece_sfx_, SOUND_NO_REPEAT);
-
-//                        if (error == SOUND_ERROR)
-//                        {
-//                            throw std::runtime_error(Mix_GetError());
-//                        }
-//                    }
-//                }
-//            }
-
-//            std::cout << std::flush;
-//        }
-
-        handleEvents();
-
-        SDL_Rect rectangle;
-
-        // Render chess board
-        for (auto column = 0; column < BOARD_WIDTH; column++)
+    for (auto column = 0; column < BOARD_WIDTH; column++)
+    {
+        for (auto row = 0; row < BOARD_HEIGHT; row++)
         {
-            for (auto row = 0; row < BOARD_HEIGHT; row++)
+            rectangle.x = column * POSITION_WIDTH;
+            rectangle.y = row * POSITION_HEIGHT;
+            rectangle.h = POSITION_HEIGHT;
+            rectangle.w = POSITION_WIDTH;
+
+            // Piece background
+            if ((column + row) % 2 == 0)
             {
-                rectangle.x = column * POSITION_WIDTH;
-                rectangle.y = row * POSITION_HEIGHT;
-                rectangle.h = POSITION_HEIGHT;
-                rectangle.w = POSITION_WIDTH;
+                // Light
+                error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_LIGHT_R, BOARD_COLOR_LIGHT_G, BOARD_COLOR_LIGHT_B, ALPHA_COLOR);
+            }
+            else
+            {
+                // Dark
+                error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_DARK_R, BOARD_COLOR_DARK_G, BOARD_COLOR_DARK_B, ALPHA_COLOR);
+            }
 
-                // Piece background
-                if ((column + row) % 2 == 0)
-                {
-                    // Light
-                    error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_LIGHT_R, BOARD_COLOR_LIGHT_G, BOARD_COLOR_LIGHT_B, ALPHA_COLOR);
-                }
-                else
-                {
-                    // Dark
-                    error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_DARK_R, BOARD_COLOR_DARK_G, BOARD_COLOR_DARK_B, ALPHA_COLOR);
-                }
+            if (error)
+            {
+                throw std::runtime_error(SDL_GetError());
+            }
+
+            error = SDL_RenderFillRect(renderer_, &rectangle);
+
+            if (error)
+            {
+                throw std::runtime_error(SDL_GetError());
+            }
+
+            // Piece
+            const auto& piece = board_[row][column];
+            if (piece != nullptr)
+            {
+                error = SDL_RenderCopy(renderer_, piece->GetTexture(), nullptr, &rectangle);
 
                 if (error)
                 {
                     throw std::runtime_error(SDL_GetError());
-                }
-
-                error = SDL_RenderFillRect(renderer_, &rectangle);
-
-                if (error)
-                {
-                    throw std::runtime_error(SDL_GetError());
-                }
-
-                // Piece
-                const auto& piece = board_[row][column];
-                if (piece != nullptr)
-                {
-                    error = SDL_RenderCopy(renderer_, piece->GetTexture(), nullptr, &rectangle);
-
-                    if (error)
-                    {
-                        throw std::runtime_error(SDL_GetError());
-                    }
                 }
             }
         }
-
-        // Render frame
-        SDL_RenderPresent(renderer_);
     }
-}
 
-void Game::render()
-{
-    SDL_RenderClear(renderer_);
-
-    // TODO
-
+    // Render frame
     SDL_RenderPresent(renderer_);
 }
 

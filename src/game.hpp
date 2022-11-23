@@ -18,6 +18,10 @@ class Game
     vector<vector<shared_ptr<Piece>>> board_;
     Position current_position_;
 
+    // TODO use Position.class
+    int old_column_index = 0;
+    int old_row_index = 0;
+
 public:
     Game();
     ~Game();
@@ -27,10 +31,9 @@ public:
     // TODO move to private methods
     bool isRunning() const;
     bool initialize();
-    void startLoop();
     void handleEvents();
     void update();
-    void render();
+    void renderBoard();
     void destroyEverything();
 
     const auto& getBoard() const;
