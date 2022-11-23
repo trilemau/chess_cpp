@@ -1,13 +1,13 @@
 #include "knight.hpp"
 
-Knight::Knight()
-    : Piece(PieceType::Knight)
+Knight::Knight(PieceColor piece_color)
+    : Piece(PieceType::Knight, piece_color)
 {
 
 }
 
-Knight::Knight(SDL_Renderer* renderer, const string& texture_filename)
-    : Piece(PieceType::Knight, renderer, texture_filename)
+Knight::Knight(PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename)
+    : Piece(PieceType::Knight, piece_color, renderer, texture_filename)
 {
 
 }

@@ -24,7 +24,7 @@ void CompareMoves(const vector<Position>& moves, const vector<Position>& expecte
 
 TEST_CASE("King")
 {
-    King king;
+    King king(PieceColor::White);
 
     SECTION("Upper left board")
     {

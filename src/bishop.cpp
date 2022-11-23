@@ -1,13 +1,13 @@
 #include "bishop.hpp"
 
-Bishop::Bishop()
-    : Piece(PieceType::Bishop)
+Bishop::Bishop(PieceColor piece_color)
+    : Piece(PieceType::Bishop, piece_color)
 {
 
 }
 
-Bishop::Bishop(SDL_Renderer* renderer, const string& texture_filename)
-    : Piece(PieceType::Bishop, renderer, texture_filename)
+Bishop::Bishop(PieceColor piece_color,SDL_Renderer* renderer, const string& texture_filename)
+    : Piece(PieceType::Bishop, piece_color, renderer, texture_filename)
 {
 
 }

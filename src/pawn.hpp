@@ -5,8 +5,8 @@
 class Pawn : public Piece
 {
 public:
-	Pawn();
-	Pawn(SDL_Renderer* renderer, const string& texture_filename);
+	Pawn(PieceColor piece_color);
+	Pawn(PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename);
 
 	std::vector<Position> LegalMoves() const override;
 };

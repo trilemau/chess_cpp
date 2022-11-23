@@ -1,13 +1,13 @@
 #include "king.hpp"
 
-King::King()
-    : Piece(PieceType::King)
+King::King(PieceColor piece_color)
+    : Piece(PieceType::King, piece_color)
 {
 
 }
 
-King::King(SDL_Renderer* renderer, const string& texture_filename)
-    : Piece(PieceType::King, renderer, texture_filename)
+King::King(PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename)
+    : Piece(PieceType::King, piece_color, renderer, texture_filename)
 {
 
 }

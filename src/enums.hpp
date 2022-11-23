@@ -9,3 +9,9 @@ enum class PieceType
     Knight,
     Pawn
 };
+
+enum class PieceColor
+{
+    White,
+    Black
+};

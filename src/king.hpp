@@ -5,8 +5,8 @@
 class King : public Piece
 {
 public:
-    King();
-    King(SDL_Renderer* renderer, const string& texture_filename);
+    King(PieceColor piece_color);
+    King(PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename);
 
     std::vector<Position> LegalMoves() const override;
 };

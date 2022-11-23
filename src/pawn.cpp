@@ -1,13 +1,13 @@
 #include "pawn.hpp"
 
-Pawn::Pawn()
-    : Piece(PieceType::Pawn)
+Pawn::Pawn(PieceColor piece_color)
+    : Piece(PieceType::Pawn, piece_color)
 {
 
 }
 
-Pawn::Pawn(SDL_Renderer* renderer, const string& texture_filename)
-    : Piece(PieceType::Pawn, renderer, texture_filename)
+Pawn::Pawn(PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename)
+    : Piece(PieceType::Pawn, piece_color, renderer, texture_filename)
 {
 
 }

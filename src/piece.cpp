@@ -1,14 +1,16 @@
 #include "piece.hpp"
 
-Piece::Piece(PieceType piece_type)
+Piece::Piece(PieceType piece_type, PieceColor piece_color)
     : piece_type_(piece_type)
+    , piece_color_(piece_color)
 {
 
 }
 
 // TODO const string& to string_view
-Piece::Piece(PieceType piece_type, SDL_Renderer* renderer, const string& texture_filename)
+Piece::Piece(PieceType piece_type, PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename)
     : piece_type_(piece_type)
+    , piece_color_(piece_color)
 {
     std::cout << "Loading texture (" << texture_filename <<  ") ...\n";
 
@@ -32,6 +34,11 @@ Piece::~Piece()
 PieceType Piece::GetPieceType() const
 {
     return piece_type_;
+}
+
+PieceColor Piece::GetPieceColor() const
+{
+    return piece_color_;
 }
 
 const Position& Piece::GetPosition() const

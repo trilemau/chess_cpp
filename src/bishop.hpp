@@ -5,8 +5,8 @@
 class Bishop : public Piece
 {
 public:
-	Bishop();
-	Bishop(SDL_Renderer* renderer, const string& texture_filename);
+	Bishop(PieceColor piece_color);
+	Bishop(PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename);
 
 	std::vector<Position> LegalMoves() const override;
 };

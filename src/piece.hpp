@@ -7,15 +7,17 @@
 class Piece
 {
     PieceType piece_type_;
+    PieceColor piece_color_;
     Position position_;
     SDL_Texture* texture_;
 
 public:
-    Piece(PieceType piece_type);
-    Piece(PieceType piece_type, SDL_Renderer* renderer, const string& texture_filename);
+    Piece(PieceType piece_type, PieceColor piece_color);
+    Piece(PieceType piece_type, PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename);
     virtual ~Piece();
 
     PieceType GetPieceType() const;
+    PieceColor GetPieceColor() const;
 
     const Position& GetPosition() const;
     void SetPosition(const Position& position);

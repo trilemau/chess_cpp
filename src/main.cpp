@@ -21,6 +21,27 @@
 
 #define SDL_NO_ERROR 0
 
+#define SOUND_FREQUENCY 44100
+#define SOUND_CHANNELS 2
+#define SOUND_CHUNKS 2048
+#define SOUND_NO_REPEAT 0
+
+bool CanMove(int old_column_index, int old_row_index, int new_column_index, int new_row_index)
+{
+    // Check if the old and new position is the same
+    if (new_column_index == old_column_index && new_row_index == old_row_index)
+    {
+        return false;
+    }
+
+    // TODO
+    // Check if the new position is taken by the same color pieces
+
+
+    // TODO casltling
+    return true;
+}
+
 int main()
 {
     std::cout << "Game started...\n";
@@ -54,24 +75,25 @@ int main()
     //Update the renderer which will show the renderer cleared by the draw color
     SDL_RenderPresent(renderer);
 
-    auto black_king = std::make_shared<King>(renderer, "images/b_king_png_shadow_1024px.png");
-    auto black_queen = std::make_shared<Queen>(renderer, "images/b_queen_png_shadow_1024px.png");
-    auto black_rook = std::make_shared<Rook>(renderer, "images/b_rook_png_shadow_1024px.png");
-    auto black_bishop = std::make_shared<Bishop>(renderer, "images/b_bishop_png_shadow_1024px.png");
-    auto black_knight = std::make_shared<Knight>(renderer, "images/b_knight_png_shadow_1024px.png");
-    auto black_pawn = std::make_shared<Pawn>(renderer, "images/b_pawn_png_shadow_1024px.png");
+    // TODO
+    // Renderer to singleton 
+    // Textures to constructor
+    auto black_king = std::make_shared<King>(PieceColor::Black, renderer, "images/b_king_png_shadow_1024px.png");
+    auto black_queen = std::make_shared<Queen>(PieceColor::Black, renderer, "images/b_queen_png_shadow_1024px.png");
+    auto black_rook = std::make_shared<Rook>(PieceColor::Black, renderer, "images/b_rook_png_shadow_1024px.png");
+    auto black_bishop = std::make_shared<Bishop>(PieceColor::Black, renderer, "images/b_bishop_png_shadow_1024px.png");
+    auto black_knight = std::make_shared<Knight>(PieceColor::Black, renderer, "images/b_knight_png_shadow_1024px.png");
+    auto black_pawn = std::make_shared<Pawn>(PieceColor::Black, renderer, "images/b_pawn_png_shadow_1024px.png");
 
-    auto white_king = std::make_shared<King>(renderer, "images/w_king_png_shadow_1024px.png");
-    auto white_queen = std::make_shared<Queen>(renderer, "images/w_queen_png_shadow_1024px.png");
-    auto white_rook = std::make_shared<Rook>(renderer, "images/w_rook_png_shadow_1024px.png");
-    auto white_bishop = std::make_shared<Bishop>(renderer, "images/w_bishop_png_shadow_1024px.png");
-    auto white_knight = std::make_shared<Knight>(renderer, "images/w_knight_png_shadow_1024px.png");
-    auto white_pawn = std::make_shared<Pawn>(renderer, "images/w_pawn_png_shadow_1024px.png");
-
-    auto texture = IMG_LoadTexture(renderer, "images/w_king_png_shadow_1024px.png");
+    auto white_king = std::make_shared<King>(PieceColor::White, renderer, "images/w_king_png_shadow_1024px.png");
+    auto white_queen = std::make_shared<Queen>(PieceColor::White, renderer, "images/w_queen_png_shadow_1024px.png");
+    auto white_rook = std::make_shared<Rook>(PieceColor::White, renderer, "images/w_rook_png_shadow_1024px.png");
+    auto white_bishop = std::make_shared<Bishop>(PieceColor::White, renderer, "images/w_bishop_png_shadow_1024px.png");
+    auto white_knight = std::make_shared<Knight>(PieceColor::White, renderer, "images/w_knight_png_shadow_1024px.png");
+    auto white_pawn = std::make_shared<Pawn>(PieceColor::White, renderer, "images/w_pawn_png_shadow_1024px.png");
 
     // Initialize audio
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != SDL_NO_ERROR) // TODO values to macro
+    if (Mix_OpenAudio(SOUND_FREQUENCY, MIX_DEFAULT_FORMAT, SOUND_CHANNELS, SOUND_CHUNKS) != SDL_NO_ERROR)
     {
         std::cerr << "Failed to initialize audio=" << Mix_GetError();
         return EXIT_FAILURE;
@@ -94,14 +116,21 @@ int main()
         { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
         { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
         { white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn },
-        { black_rook, white_knight, black_bishop, white_queen, white_king, black_bishop, white_knight, black_rook }
+        { white_rook, white_knight, white_bishop, white_queen, white_king, white_bishop, white_knight, white_rook }
     };
+
+    SDL_Event e;
+    int error = 0;
+    bool quit = false;
+
+    auto old_column_index = 0;
+    auto old_row_index = 0;
+
+    auto new_column_index = 0;
+    auto new_row_index = 0;
 
     try
     {
-        SDL_Event e;
-        int error = 0;
-        bool quit = false;
         while (!quit) {
             while (SDL_PollEvent(&e)) {
 
@@ -119,14 +148,30 @@ int main()
 
                 if (e.type == SDL_MOUSEBUTTONDOWN)
                 {
-                    std::cout << "mouse button pressed\n";
+                    if (e.button.button == SDL_BUTTON_LEFT)
+                    {
+                        old_column_index = e.button.x / POSITION_WIDTH;
+                        old_row_index = e.button.y / POSITION_HEIGHT;
+                        std::cout << "old=[" << old_column_index << ", " << old_row_index << "]" << '\n';
+                    }
                 }
 
                 if (e.type == SDL_MOUSEBUTTONUP)
                 {
-                    Mix_PlayMusic(piece_move_sfx, 0); // TODO to macro
+                    if (e.button.button == SDL_BUTTON_LEFT)
+                    {
+                        new_column_index = e.button.x / POSITION_WIDTH;
+                        new_row_index = e.button.y / POSITION_HEIGHT;
+                        std::cout << "new= [" << new_column_index << ", " << new_row_index << "]" << '\n';
 
-                    std::cout << "mouse button released\n";
+                        if (CanMove(old_column_index, old_row_index, new_column_index, new_row_index))
+                        {
+                            // Move piece
+                            board[new_row_index][new_column_index] = std::move(board[old_row_index][old_column_index]);
+
+                            Mix_PlayMusic(piece_move_sfx, SOUND_NO_REPEAT);
+                        }
+                    }
                 }
 
                 std::cout << std::flush;

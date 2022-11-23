@@ -1,13 +1,13 @@
 #include "queen.hpp"
 
-Queen::Queen()
-    : Piece(PieceType::Queen)
+Queen::Queen(PieceColor piece_color)
+    : Piece(PieceType::Queen, piece_color)
 {
 
 }
 
-Queen::Queen(SDL_Renderer* renderer, const string& texture_filename)
-    : Piece(PieceType::Queen, renderer, texture_filename)
+Queen::Queen(PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename)
+    : Piece(PieceType::Queen, piece_color, renderer, texture_filename)
 {
 
 }
