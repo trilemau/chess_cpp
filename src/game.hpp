@@ -18,6 +18,15 @@ class Game
     SDL_Renderer* renderer_;
     Mix_Chunk* move_piece_sfx_;
 
+    set<shared_ptr<Piece>> pieces_player1;
+    set<shared_ptr<Piece>> pieces_player2;
+
+    set<shared_ptr<Piece>> captured_pieces_player1;
+    set<shared_ptr<Piece>> captured_pieces_player2;
+
+    shared_ptr<Piece> selected_piece_;
+    Position mouse_position_;
+
     ChessBoard board_;
     Position current_position_;
 
@@ -42,7 +51,8 @@ public:
 
     void OnMousePressed(const SDL_Event& event);
     void OnMouseReleased(const SDL_Event& event);
-    
+
+    // States
     bool isRunning() const;
 
     const ChessBoard& GetBoard() const;

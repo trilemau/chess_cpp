@@ -189,22 +189,22 @@ TEST_CASE("Game.class")
         auto white_pawn_7 = std::make_shared<Pawn>(PieceColor::White);
         auto white_pawn_8 = std::make_shared<Pawn>(PieceColor::White);
 
-        white_king->SetPosition({ 0, 4 });
-        white_queen->SetPosition({ 0, 3 });
-        white_rook_l->SetPosition({ 0, 0 });
-        white_rook_r->SetPosition({ 0, 7 });
-        white_bishop_l->SetPosition({ 0, 2 });
-        white_bishop_r->SetPosition({ 0, 5 });
-        white_knight_l->SetPosition({ 0, 1 });
-        white_knight_r->SetPosition({ 0, 6 });
-        white_pawn_1->SetPosition({ 1, 0 });
-        white_pawn_2->SetPosition({ 1, 1 });
-        white_pawn_3->SetPosition({ 1, 2 });
-        white_pawn_4->SetPosition({ 1, 3 });
-        white_pawn_5->SetPosition({ 1, 4 });
-        white_pawn_6->SetPosition({ 1, 5 });
-        white_pawn_7->SetPosition({ 1, 6 });
-        white_pawn_8->SetPosition({ 1, 7 });
+        white_king->SetPosition({ 7, 4 });
+        white_queen->SetPosition({ 7, 3 });
+        white_rook_l->SetPosition({ 7, 0 });
+        white_rook_r->SetPosition({ 7, 7 });
+        white_bishop_l->SetPosition({ 7, 2 });
+        white_bishop_r->SetPosition({ 7, 5 });
+        white_knight_l->SetPosition({ 7, 1 });
+        white_knight_r->SetPosition({ 7, 6 });
+        white_pawn_1->SetPosition({ 6, 0 });
+        white_pawn_2->SetPosition({ 6, 1 });
+        white_pawn_3->SetPosition({ 6, 2 });
+        white_pawn_4->SetPosition({ 6, 3 });
+        white_pawn_5->SetPosition({ 6, 4 });
+        white_pawn_6->SetPosition({ 6, 5 });
+        white_pawn_7->SetPosition({ 6, 6 });
+        white_pawn_8->SetPosition({ 6, 7 });
 
         ChessBoard expected =
         {
@@ -225,7 +225,7 @@ TEST_CASE("Game.class")
         for (auto row_index = 0; row_index < result.size(); row_index++)
         {
             const auto& row1 = result[row_index];
-            const auto& row2 = result[row_index];
+            const auto& row2 = expected[row_index];
 
             REQUIRE(row1.size() == row2.size());
 
@@ -234,7 +234,18 @@ TEST_CASE("Game.class")
                 const auto& piece1 = row1[column_index];
                 const auto& piece2 = row2[column_index];
 
-                REQUIRE(piece1 == piece2);
+                if (piece1 && piece2)
+                {
+                    const auto& position1 = piece1->GetPosition();
+                    const auto& position2 = piece2->GetPosition();
+
+                    INFO("row,col=[" + std::to_string(row_index) + ", " + std::to_string(column_index) + "]");
+                    INFO("row,col=[" + std::to_string(row_index) + ", " + std::to_string(column_index) + "]");
+                    INFO("position1=[" + std::to_string(position1.row) + ", " + std::to_string(position1.column) + "]");
+                    INFO("position2=[" + std::to_string(position2.row) + ", " + std::to_string(position2.column) + "]");
+                    
+                    REQUIRE(*piece1 == *piece2);
+                }
             }
         }
     }
