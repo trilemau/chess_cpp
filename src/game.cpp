@@ -146,7 +146,7 @@ bool Game::LoadBoard(const string& fen)
         }
 
         auto piece = createPieceFromChar(c);
-        piece->SetPosition({ row, column });
+        piece->SetPosition({ column, row });
         row_with_pieces.emplace_back(std::move(piece));
         column++;
     }
@@ -259,6 +259,10 @@ void Game::RenderBoard()
         {
             SDL_GetMouseState(&rectangle.x, &rectangle.y);
 
+            // Move mouse in the middle
+            rectangle.x -= POSITION_WIDTH / 2;
+            rectangle.y -= POSITION_HEIGHT / 2;
+
             // Transparent BG
             error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_TRANSPARENT_R, BOARD_COLOR_TRANSPARENT_G, BOARD_COLOR_TRANSPARENT_B, ALPHA_COLOR_TRANSPARENT);
 
@@ -326,6 +330,12 @@ void Game::OnMouseReleased(const SDL_Event& event)
                 // Set piece to new position
                 selected_piece_->SetPosition(new_position);
                 board_[new_position.row][new_position.column] = std::move(selected_piece_);
+
+                // Play SFX
+                if (Mix_PlayChannel(SOUND_PLAY_CHANNEL, move_piece_sfx_, SOUND_NO_REPEAT) == SOUND_ERROR)
+                {
+                    throw std::runtime_error(Mix_GetError());
+                }
             }
             else
             {
@@ -333,12 +343,6 @@ void Game::OnMouseReleased(const SDL_Event& event)
                 const auto old_position = selected_piece_->GetPosition();
                 selected_piece_->SetPosition(new_position);
                 board_[old_position.row][old_position.column] = std::move(selected_piece_);
-            }
-
-            // Play SFX
-            if (Mix_PlayChannel(SOUND_PLAY_CHANNEL, move_piece_sfx_, SOUND_NO_REPEAT) == SOUND_ERROR)
-            {
-                throw std::runtime_error(Mix_GetError());
             }
         }
     }

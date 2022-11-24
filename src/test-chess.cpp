@@ -244,6 +244,7 @@ TEST_CASE("Game.class")
                     INFO("position1=[" + std::to_string(position1.row) + ", " + std::to_string(position1.column) + "]");
                     INFO("position2=[" + std::to_string(position2.row) + ", " + std::to_string(position2.column) + "]");
                     
+                    // TODO exchange position positions
                     REQUIRE(*piece1 == *piece2);
                 }
             }
