@@ -2,6 +2,8 @@
 
 // TODO dont use macros
 
+#define FEN_STARTING_BOARD "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
 #define BOARD_COLOR_LIGHT_R 124
 #define BOARD_COLOR_LIGHT_G 76
 #define BOARD_COLOR_LIGHT_B 62
@@ -20,6 +22,19 @@
 #define SOUND_NO_REPEAT 0
 #define SOUND_PLAY_CHANNEL -1
 #define SOUND_ERROR -1
+
+#define BLACK_KING_TEXTURE "images/b_king_png_shadow_1024px.png"
+#define BLACK_QUEEN_TEXTURE "images/b_queen_png_shadow_1024px.png"
+#define BLACK_ROOK_TEXTURE "images/b_rook_png_shadow_1024px.png"
+#define BLACK_BISHOP_TEXTURE "images/b_bishop_png_shadow_1024px.png"
+#define BLACK_KNIGHT_TEXTURE "images/b_knight_png_shadow_1024px.png"
+#define BLACK_PAWN_TEXTURE "images/b_pawn_png_shadow_1024px.png"
+#define WHITE_KING_TEXTURE "images/w_king_png_shadow_1024px.png"
+#define WHITE_QUEEN_TEXTURE "images/w_queen_png_shadow_1024px.png"
+#define WHITE_ROOK_TEXTURE "images/w_rook_png_shadow_1024px.png"
+#define WHITE_BISHOP_TEXTURE "images/w_bishop_png_shadow_1024px.png"
+#define WHITE_KNIGHT_TEXTURE "images/w_knight_png_shadow_1024px.png"
+#define WHITE_PAWN_TEXTURE "images/w_pawn_png_shadow_1024px.png"
 
 // WINDOW properties
 constexpr const char* WINDOW_NAME = "Chess";

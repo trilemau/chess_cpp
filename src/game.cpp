@@ -7,10 +7,10 @@
 #include "knight.hpp"
 #include "pawn.hpp"
 
-bool CanMove(int old_column_index, int old_row_index, int new_column_index, int new_row_index)
+bool CanMove(const Position& current_position, const Position& new_position)
 {
     // Check if the old and new position is the same
-    if (new_column_index == old_column_index && new_row_index == old_row_index)
+    if (current_position == new_position)
     {
         return false;
     }
@@ -24,22 +24,24 @@ bool CanMove(int old_column_index, int old_row_index, int new_column_index, int 
 }
 
 Game::Game()
-    : is_running_(false)
+    : testing_(false)
+    , is_running_(false)
+    , current_position_(0, 0) // TODO incorrect ???
 {
 
 }
 
 Game::~Game()
 {
-    destroyEverything();
+    DestroyResources();
 }
 
-bool Game::isRunning() const
+void Game::SetTesting(bool testing)
 {
-    return is_running_;
+    testing_ = testing;
 }
 
-bool Game::initialize()
+bool Game::Initialize()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING))
     {
@@ -89,34 +91,7 @@ bool Game::initialize()
 
     std::cout << "Move piece SFX loaded...\n";
 
-    // TODO
-    // Textures to constructor
-    auto black_king = std::make_shared<King>(PieceColor::Black, renderer_, "images/b_king_png_shadow_1024px.png");
-    auto black_queen = std::make_shared<Queen>(PieceColor::Black, renderer_, "images/b_queen_png_shadow_1024px.png");
-    auto black_rook = std::make_shared<Rook>(PieceColor::Black, renderer_, "images/b_rook_png_shadow_1024px.png");
-    auto black_bishop = std::make_shared<Bishop>(PieceColor::Black, renderer_, "images/b_bishop_png_shadow_1024px.png");
-    auto black_knight = std::make_shared<Knight>(PieceColor::Black, renderer_, "images/b_knight_png_shadow_1024px.png");
-    auto black_pawn = std::make_shared<Pawn>(PieceColor::Black, renderer_, "images/b_pawn_png_shadow_1024px.png");
-
-    auto white_king = std::make_shared<King>(PieceColor::White, renderer_, "images/w_king_png_shadow_1024px.png");
-    auto white_queen = std::make_shared<Queen>(PieceColor::White, renderer_, "images/w_queen_png_shadow_1024px.png");
-    auto white_rook = std::make_shared<Rook>(PieceColor::White, renderer_, "images/w_rook_png_shadow_1024px.png");
-    auto white_bishop = std::make_shared<Bishop>(PieceColor::White, renderer_, "images/w_bishop_png_shadow_1024px.png");
-    auto white_knight = std::make_shared<Knight>(PieceColor::White, renderer_, "images/w_knight_png_shadow_1024px.png");
-    auto white_pawn = std::make_shared<Pawn>(PieceColor::White, renderer_, "images/w_pawn_png_shadow_1024px.png");
-
-    board_ =
-    {
-        { black_rook, black_knight, black_bishop, black_queen, black_king, black_bishop, black_knight, black_rook },
-        { black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn },
-        { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
-        { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
-        { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
-        { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr },
-        { white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn },
-        { white_rook, white_knight, white_bishop, white_queen, white_king, white_bishop, white_knight, white_rook }
-    };
-
+    LoadBoard(FEN_STARTING_BOARD);
     std::cout << "Board prepared...\n";
 
     is_running_ = true;
@@ -125,69 +100,107 @@ bool Game::initialize()
     return true;
 }
 
-void Game::handleEvents()
+bool Game::LoadBoard(const string& fen)
 {
-    SDL_Event e;
-    int error = 0;
+    // https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
+    // Starting position:
+    // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 
-    while (SDL_PollEvent(&e)) {
+    board_.clear();
 
-        if (e.type == SDL_QUIT)
+    auto row = 0;
+    auto column = 0;
+    vector<shared_ptr<Piece>> row_with_pieces;
+
+    for (auto c : fen)
+    {
+        // End adding pieces
+        if (board_.size() >= BOARD_HEIGHT)
+        {
+            break;
+        }
+
+        // New row
+        if (row_with_pieces.size() >= BOARD_WIDTH)
+        {
+            board_.emplace_back(row_with_pieces);
+            row_with_pieces.clear();
+            row++;
+            continue;
+        }
+
+        // empty pieces
+        if (std::isdigit(c))
+        {
+            const auto empty_pieces = getIntFromChar(c);
+
+            for (auto i = 0; i < empty_pieces; i++)
+            {
+                row_with_pieces.emplace_back(nullptr);
+                column++;
+            }
+
+            continue;
+        }
+
+        auto piece = createPieceFromChar(c);
+        piece->SetPosition({ row, column });
+        row_with_pieces.emplace_back(std::move(piece));
+        column++;
+    }
+
+    // Check if valid board
+    for (const auto& row : board_)
+    {
+        if (row.size() != BOARD_WIDTH)
+        {
+            std::cerr << "Invalid board FEN=" << fen << '\n';
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void Game::HandleEvents()
+{
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event)) {
+
+        if (event.type == SDL_QUIT)
         {
             std::cout << "Window closed, quitting...\n";
             is_running_ = false;
         }
 
-        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
         {
             std::cout << "ESC pressed, quitting...\n";
             is_running_ = false;
         }
 
-        if (e.type == SDL_MOUSEBUTTONDOWN)
+        if (event.type == SDL_MOUSEBUTTONDOWN)
         {
-            if (e.button.button == SDL_BUTTON_LEFT)
-            {
-                old_column_index = e.button.x / POSITION_WIDTH;
-                old_row_index = e.button.y / POSITION_HEIGHT;
-                std::cout << "old=[" << old_column_index << ", " << old_row_index << "]" << '\n';
-            }
+            OnMousePressed(event);
         }
 
-        if (e.type == SDL_MOUSEBUTTONUP)
+        if (event.type == SDL_MOUSEBUTTONUP)
         {
-            if (e.button.button == SDL_BUTTON_LEFT)
-            {
-                const auto new_column_index = e.button.x / POSITION_WIDTH;
-                const auto new_row_index = e.button.y / POSITION_HEIGHT;
-                std::cout << "new= [" << new_column_index << ", " << new_row_index << "]" << '\n';
-
-                if (CanMove(old_column_index, old_row_index, new_column_index, new_row_index))
-                {
-                    // Move piece
-                    board_[new_row_index][new_column_index] = std::move(board_[old_row_index][old_column_index]);
-
-                    error = Mix_PlayChannel(SOUND_PLAY_CHANNEL, move_piece_sfx_, SOUND_NO_REPEAT);
-
-                    if (error == SOUND_ERROR)
-                    {
-                        throw std::runtime_error(Mix_GetError());
-                    }
-                }
-            }
+            OnMouseReleased(event);
         }
 
         std::cout << std::flush;
     }
 }
 
-void Game::update()
+void Game::Update()
 {
-    handleEvents();
-    renderBoard();
+    HandleEvents();
+    RenderBoard();
 }
 
-void Game::renderBoard()
+void Game::RenderBoard()
 {
     SDL_Rect rectangle;
     int error = 0;
@@ -243,7 +256,7 @@ void Game::renderBoard()
     SDL_RenderPresent(renderer_);
 }
 
-void Game::destroyEverything()
+void Game::DestroyResources()
 {
     // Destroy resources
     SDL_DestroyWindow(window_);
@@ -256,34 +269,71 @@ void Game::destroyEverything()
     IMG_Quit();
 }
 
-const auto& Game::getBoard() const
+void Game::OnMousePressed(const SDL_Event& event)
+{
+    if (event.button.button == SDL_BUTTON_LEFT)
+    {
+        current_position_ = { event.button.x / POSITION_WIDTH, event.button.y / POSITION_HEIGHT };
+        std::cout << "current=[" << current_position_.column<< ", " << current_position_.row << "]" << '\n';
+    }
+}
+
+void Game::OnMouseReleased(const SDL_Event& event)
+{
+    int error = 0;
+
+    if (event.button.button == SDL_BUTTON_LEFT)
+    {
+        Position new_position{ event.button.x / POSITION_WIDTH, event.button.y / POSITION_HEIGHT };
+        std::cout << "new=[" << new_position.column << ", " << new_position.row << "]" << '\n';
+
+        if (CanMove(current_position_, new_position))
+        {
+            // Move piece
+            board_[new_position.row][new_position.column] = std::move(board_[current_position_.row][current_position_.column]);
+
+            // Play SFX
+            if (Mix_PlayChannel(SOUND_PLAY_CHANNEL, move_piece_sfx_, SOUND_NO_REPEAT) == SOUND_ERROR)
+            {
+                throw std::runtime_error(Mix_GetError());
+            }
+        }
+    }
+}
+
+bool Game::isRunning() const
+{
+    return is_running_;
+}
+
+const ChessBoard& Game::GetBoard() const
 {
     return board_;
 }
 
-auto& Game::getBoard()
+ChessBoard& Game::GetBoard()
 {
     return board_;
 }
 
 const Piece& Game::GetPiece(const Position& position) const
 {
-    if (board_[position.x][position.y] == nullptr)
+    if (board_[position.column][position.row] == nullptr)
     {
         throw std::runtime_error("invalid position");
     }
 
-    return *board_[position.x][position.y].get();
+    return *board_[position.column][position.row].get();
 }
 
 Piece& Game::GetPiece(const Position& position)
 {
-    if (board_[position.x][position.y] == nullptr)
+    if (board_[position.column][position.row] == nullptr)
     {
         throw std::runtime_error("invalid position");
     }
 
-    return *board_[position.x][position.y].get();
+    return *board_[position.column][position.row].get();
 }
 
 const Position& Game::GetCurrentPosition() const
@@ -294,4 +344,84 @@ const Position& Game::GetCurrentPosition() const
 Position& Game::GetCurrentPosition()
 {
     return current_position_;
+}
+
+shared_ptr<Piece> Game::createPieceFromChar(char c) const
+{
+    if (testing_)
+    {
+        return createPieceFromCharNoTexture(c);
+    }
+
+    switch (c)
+    {
+    case 'K':
+        return std::make_shared<King>(PieceColor::White, renderer_, WHITE_KING_TEXTURE);
+    case 'Q':
+        return std::make_shared<Queen>(PieceColor::White, renderer_, WHITE_QUEEN_TEXTURE);
+    case 'R':
+        return std::make_shared<Rook>(PieceColor::White, renderer_, WHITE_ROOK_TEXTURE);
+    case 'B':
+        return std::make_shared<Bishop>(PieceColor::White, renderer_, WHITE_BISHOP_TEXTURE);
+    case 'N':
+        return std::make_shared<Knight>(PieceColor::White, renderer_, WHITE_KNIGHT_TEXTURE);
+    case 'P':
+        return std::make_shared<Pawn>(PieceColor::White, renderer_, WHITE_PAWN_TEXTURE);
+    case 'k':
+        return std::make_shared<King>(PieceColor::White, renderer_, BLACK_KING_TEXTURE);
+    case 'q':
+        return std::make_shared<Queen>(PieceColor::White, renderer_, BLACK_QUEEN_TEXTURE);
+    case 'r':
+        return std::make_shared<Rook>(PieceColor::White, renderer_, BLACK_ROOK_TEXTURE);
+    case 'b':
+        return std::make_shared<Bishop>(PieceColor::White, renderer_, BLACK_BISHOP_TEXTURE);
+    case 'n':
+        return std::make_shared<Knight>(PieceColor::White, renderer_, BLACK_KNIGHT_TEXTURE);
+    case 'p':
+        return std::make_shared<Pawn>(PieceColor::White, renderer_, BLACK_PAWN_TEXTURE);
+    default:
+        break;
+    }
+
+    throw std::runtime_error("Creating piece for invalid character=" + c);
+}
+
+shared_ptr<Piece> Game::createPieceFromCharNoTexture(char c) const
+{
+    switch (c)
+    {
+    case 'K':
+        return std::make_shared<King>(PieceColor::White);
+    case 'Q':
+        return std::make_shared<Queen>(PieceColor::White);
+    case 'R':
+        return std::make_shared<Rook>(PieceColor::White);
+    case 'B':
+        return std::make_shared<Bishop>(PieceColor::White);
+    case 'N':
+        return std::make_shared<Knight>(PieceColor::White);
+    case 'P':
+        return std::make_shared<Pawn>(PieceColor::White);
+    case 'k':
+        return std::make_shared<King>(PieceColor::White);
+    case 'q':
+        return std::make_shared<Queen>(PieceColor::White);
+    case 'r':
+        return std::make_shared<Rook>(PieceColor::White);
+    case 'b':
+        return std::make_shared<Bishop>(PieceColor::White);
+    case 'n':
+        return std::make_shared<Knight>(PieceColor::White);
+    case 'p':
+        return std::make_shared<Pawn>(PieceColor::White);
+    default:
+        break;
+    }
+
+    throw std::runtime_error("Creating piece for invalid character=" + c);
+}
+
+int Game::getIntFromChar(char c) const
+{
+    return c - '0';
 }

@@ -17,23 +17,23 @@ std::vector<Position> King::LegalMoves() const
     std::vector<Position> legal_moves;
     const auto& position = GetPosition();
 
-    for (auto x = position.x - 1; x <= position.x + 1; x++)
+    for (auto column = position.column - 1; column <= position.column + 1; column++)
     {
-        for (auto y = position.y - 1; y <= position.y + 1; y++)
+        for (auto row = position.row - 1; row <= position.row + 1; row++)
         {
             // Do not add current position of king
-            if (x == position.x && y == position.y)
+            if (column == position.column && row == position.row)
             {
                 continue;
             }
 
             // Remove positions outside board
-            if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT)
+            if (column < 0 || column >= BOARD_WIDTH || row < 0 || row >= BOARD_HEIGHT)
             {
                 continue;
             }
 
-            legal_moves.emplace_back(x, y);
+            legal_moves.emplace_back(column, row);
         }
     }
 

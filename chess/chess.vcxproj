@@ -165,6 +165,7 @@ xcopy /y /s /i $(ProjectDir)..\src\sounds  $(ProjectDir)sounds</Command>
   <ItemGroup>
     <ClInclude Include="..\src\bishop.hpp" />
     <ClInclude Include="..\src\board.hpp" />
+    <ClInclude Include="..\src\constants.hpp" />
     <ClInclude Include="..\src\empty.hpp" />
     <ClInclude Include="..\src\enums.hpp" />
     <ClInclude Include="..\src\game.hpp" />

@@ -243,7 +243,7 @@ namespace Catch {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Use of __COUNTER__ is suppressed during code analysis in
-// CLion/AppCode 2017.2.x and former, because __COUNTER__ is not properly
+// CLion/AppCode 2017.2.column and former, because __COUNTER__ is not properly
 // handled by it.
 // Otherwise all supported compilers support COUNTER macro,
 // but user still might want to turn it off
@@ -6413,7 +6413,7 @@ namespace detail {
     inline auto convertInto( std::string const &source, bool &target ) -> ParserResult {
         std::string srcLC = source;
         std::transform( srcLC.begin(), srcLC.end(), srcLC.begin(), []( char c ) { return static_cast<char>( ::tolower(c) ); } );
-        if (srcLC == "y" || srcLC == "1" || srcLC == "true" || srcLC == "yes" || srcLC == "on")
+        if (srcLC == "row" || srcLC == "1" || srcLC == "true" || srcLC == "yes" || srcLC == "on")
             target = true;
         else if (srcLC == "n" || srcLC == "0" || srcLC == "false" || srcLC == "no" || srcLC == "off")
             target = false;
@@ -7154,8 +7154,8 @@ namespace Catch {
                 ["-a"]["--abort"]
                 ( "abort at first failure" )
             | Opt( [&]( int x ){ config.abortAfter = x; }, "no. failures" )
-                ["-x"]["--abortx"]
-                ( "abort after x failures" )
+                ["-column"]["--abortx"]
+                ( "abort after column failures" )
             | Opt( setWarning, "warning name" )
                 ["-w"]["--warn"]
                 ( "enable warnings" )
@@ -11920,7 +11920,7 @@ namespace {
     }
 
     void hexEscapeChar(std::ostream& os, unsigned char c) {
-        os << "\\x"
+        os << "\\column"
             << std::uppercase << std::hex << std::setfill('0') << std::setw(2)
             << static_cast<int>(c);
     }

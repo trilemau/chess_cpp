@@ -42,6 +42,8 @@ chess/x64/Debug
 chess/images
 chess/sounds
 chess_test/x64/Debug
+chess_test/images
+chess_test/sounds
 
 # QT files
 build-src-MyKit-Debug

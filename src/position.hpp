@@ -4,15 +4,13 @@
 
 struct Position
 {
-    int x;
-    int y;
+    int column;
+    int row;
 
-    Position();
-    Position(int x, int y);
+    Position(int column, int row);
 
     bool operator==(const Position& position) const;
     bool operator!=(const Position& position) const;
 
-    bool isDefined() const;
     string ToString() const;
 };

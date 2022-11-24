@@ -14,12 +14,12 @@
 int main()
 {
     Game game;
-    game.initialize();
+    game.Initialize();
 
     try {
         while (game.isRunning())
         {
-            game.update();
+            game.Update();
         }
     } catch (const std::exception& exception) {
         std::cerr << "Unexpected exception=" << exception.what() << '\n';

@@ -9,12 +9,17 @@ class Piece
     PieceType piece_type_;
     PieceColor piece_color_;
     Position position_;
+
+    bool texture_loaded_;
     SDL_Texture* texture_;
 
 public:
     Piece(PieceType piece_type, PieceColor piece_color);
     Piece(PieceType piece_type, PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename);
     virtual ~Piece();
+
+    bool operator==(const Piece& piece) const;
+    bool operator!=(const Piece& piece) const;
 
     PieceType GetPieceType() const;
     PieceColor GetPieceColor() const;
