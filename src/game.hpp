@@ -23,6 +23,8 @@ class Game
     shared_ptr<Piece> selected_piece_;
 
     vector<vector<shared_ptr<Piece>>> board_;
+    bool castle_king_side_;
+    bool castle_queen_side_;
 
 public:
     Game();

@@ -4,6 +4,8 @@
 
 class Pawn : public Piece
 {
+	bool has_moved_;
+
 public:
 	Pawn(PieceColor piece_color);
 	Pawn(PieceColor piece_color, SDL_Renderer* renderer, const string& texture_filename);

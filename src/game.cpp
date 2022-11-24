@@ -31,6 +31,8 @@ Game::Game()
     , window_(nullptr)
     , renderer_(nullptr)
     , move_piece_sfx_(nullptr)
+    , castle_king_side_(false)
+    , castle_queen_side_(false)
 {
 
 }
@@ -169,6 +171,10 @@ bool Game::LoadBoard(const string& fen)
             return false;
         }
     }
+
+    // TODO: add reading castling
+    castle_king_side_ = true;
+    castle_queen_side_ = true;
 
     return true;
 }
@@ -344,9 +350,11 @@ void Game::OnMouseReleased(const SDL_Event& event)
             const Position new_position{ event.button.x / POSITION_WIDTH, event.button.y / POSITION_HEIGHT };
             std::cout << "new=[" << new_position.column << ", " << new_position.row << "]" << '\n';
 
-            const auto& old_position = selected_piece_->GetPosition();
+            const auto& possible_moves = selected_piece_->GetLegalMoves(board_);
+            const auto find = std::find(possible_moves.begin(), possible_moves.end(), new_position);
 
-            if (CanMove(old_position, new_position))
+            // Check if new position is valid
+            if (find != possible_moves.end())
             {
                 // Set piece to new position
                 selected_piece_->SetPosition(new_position);
@@ -361,7 +369,7 @@ void Game::OnMouseReleased(const SDL_Event& event)
             else
             {
                 // Set piece to old position
-                selected_piece_->SetPosition(new_position);
+                const auto& old_position = selected_piece_->GetPosition();
                 board_[old_position.row][old_position.column] = std::move(selected_piece_);
             }
         }

@@ -17,7 +17,8 @@ std::vector<Position> King::GetLegalMoves(const vector<vector<shared_ptr<Piece>>
     auto pseudo_legal_moves = GetPseudoLegalMoves(board);
     const auto& position = GetPosition();
 
-    // TODO checks
+    // TODO checkMATES
+    // TODO castling
 
     return GetPseudoLegalMoves(board);
 }
@@ -42,8 +43,8 @@ std::vector<Position> King::GetPseudoLegalMoves(const vector<vector<shared_ptr<P
     pseudo_legal_moves.emplace_back(Position(position.column, position.row + 1));
     pseudo_legal_moves.emplace_back(Position(position.column + 1, position.row + 1));
 
-    // Filter invalid positions
-    std::copy_if(pseudo_legal_moves.begin(), pseudo_legal_moves.end(), std::back_inserter(output), [&board](const Position& position)
+    // Filter invalid positions // TODO move to function
+    std::copy_if(pseudo_legal_moves.begin(), pseudo_legal_moves.end(), std::back_inserter(output), [&](const Position& position)
         {
             // Remove invalid positions
             if (position.column >= BOARD_WIDTH || position.column < 0 || position.row >= BOARD_HEIGHT || position.row < 0)
@@ -52,7 +53,8 @@ std::vector<Position> King::GetPseudoLegalMoves(const vector<vector<shared_ptr<P
             }
 
             // Remove ally positions
-            if (board[position.row][position.column] != nullptr)
+            const auto& piece_at_position = board[position.row][position.column];
+            if (piece_at_position != nullptr && piece_at_position->GetPieceColor() == GetPieceColor())
             {
                 return false;
             }
