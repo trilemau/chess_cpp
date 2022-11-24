@@ -1,6 +1,7 @@
 #pragma once
 
 // STD Libraries
+#include <algorithm>
 #include <iostream>
 #include <array>
 #include <vector>
@@ -8,6 +9,7 @@
 #include <exception>
 #include <string>
 #include <set>
+#include <ranges>
 
 // Custom headers
 #include "enums.hpp"

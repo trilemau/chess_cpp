@@ -32,6 +32,7 @@ void CompareMoves(const vector<Position>& moves, const vector<Position>& expecte
 TEST_CASE("King")
 {
     King king(PieceColor::White);
+    vector<vector<shared_ptr<Piece>>> board;
 
     SECTION("Upper left board")
     {
@@ -42,7 +43,7 @@ TEST_CASE("King")
             {1, 1}
         };
 
-        CompareMoves(king.LegalMoves(), expected);
+        CompareMoves(king.GetLegalMoves(board), expected);
     }
 
     SECTION("Upper middle board")
@@ -56,7 +57,7 @@ TEST_CASE("King")
             {5, 1}
         };
 
-        CompareMoves(king.LegalMoves(), expected);
+        CompareMoves(king.GetLegalMoves(board), expected);
     }
 
     SECTION("Upper right board")
@@ -68,7 +69,7 @@ TEST_CASE("King")
             {7, 1}
         };
 
-        CompareMoves(king.LegalMoves(), expected);
+        CompareMoves(king.GetLegalMoves(board), expected);
     }
 
     SECTION("Middle middle board")
@@ -85,7 +86,7 @@ TEST_CASE("King")
             {5, 5}
         };
 
-        CompareMoves(king.LegalMoves(), expected);
+        CompareMoves(king.GetLegalMoves(board), expected);
     }
 
     SECTION("Lower left board")
@@ -97,7 +98,7 @@ TEST_CASE("King")
             {1, 7}
         };
 
-        CompareMoves(king.LegalMoves(), expected);
+        CompareMoves(king.GetLegalMoves(board), expected);
     }
 
     SECTION("Lower middle board")
@@ -111,7 +112,7 @@ TEST_CASE("King")
             {5, 7}
         };
 
-        CompareMoves(king.LegalMoves(), expected);
+        CompareMoves(king.GetLegalMoves(board), expected);
     }
 
     SECTION("Lower right board")
@@ -123,7 +124,7 @@ TEST_CASE("King")
             {7, 6}
         };
 
-        CompareMoves(king.LegalMoves(), expected);
+        CompareMoves(king.GetLegalMoves(board), expected);
     }
 }
 
@@ -206,7 +207,7 @@ TEST_CASE("Game.class")
         white_pawn_7->SetPosition({ 6, 6 });
         white_pawn_8->SetPosition({ 6, 7 });
 
-        ChessBoard expected =
+        vector<vector<shared_ptr<Piece>>> expected =
         {
             { black_rook_l, black_knight_l, black_bishop_l, black_queen, black_king, black_bishop_r, black_knight_r, black_rook_r },
             { black_pawn_1, black_pawn_2, black_pawn_3, black_pawn_4, black_pawn_5, black_pawn_6, black_pawn_7, black_pawn_8 },

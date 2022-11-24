@@ -25,9 +25,10 @@ public:
     PieceColor GetPieceColor() const;
 
     const Position& GetPosition() const;
-    void SetPosition(const Position& position);
+    void SetPosition(const Position& position); // double && forward ??
 
     SDL_Texture* GetTexture();
 
-    virtual std::vector<Position> LegalMoves() const = 0;
+    virtual std::vector<Position> GetLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const = 0;
+    virtual std::vector<Position> GetPseudoLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const = 0;
 };

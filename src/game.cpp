@@ -7,6 +7,8 @@
 #include "knight.hpp"
 #include "pawn.hpp"
 
+#define SDL_ERROR_CHECK(error) if (error) { throw std::runtime_error(SDL_GetError()); }
+
 bool CanMove(const Position& current_position, const Position& new_position)
 {
     // Check if the old and new position is the same
@@ -26,8 +28,9 @@ bool CanMove(const Position& current_position, const Position& new_position)
 Game::Game()
     : testing_(false)
     , is_running_(false)
-    , mouse_position_(0, 0) // TODO incorrect ???
-    , current_position_(0, 0) // TODO incorrect ???
+    , window_(nullptr)
+    , renderer_(nullptr)
+    , move_piece_sfx_(nullptr)
 {
 
 }
@@ -68,7 +71,13 @@ bool Game::Initialize()
     // Check if renderer was created successfully
     if (renderer_ == nullptr)
     {
-        std::cerr << "Failed to create window=" << SDL_GetError();
+        std::cerr << "Failed to create renderer=" << SDL_GetError();
+        return false;
+    }
+
+    if (SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND))
+    {
+        std::cerr << "Failed to set render blend mode=" << SDL_GetError();
         return false;
     }
 
@@ -208,6 +217,13 @@ void Game::RenderBoard()
     SDL_Rect rectangle;
     int error = 0;
 
+    vector<Position> possible_moves;
+
+    if (selected_piece_ != nullptr)
+    {
+        possible_moves = selected_piece_->GetLegalMoves(board_);
+    }
+
     for (auto column = 0; column < BOARD_WIDTH; column++)
     {
         for (auto row = 0; row < BOARD_HEIGHT; row++)
@@ -221,42 +237,56 @@ void Game::RenderBoard()
             if ((column + row) % 2 == 0)
             {
                 // Light BG
-                error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_LIGHT_R, BOARD_COLOR_LIGHT_G, BOARD_COLOR_LIGHT_B, ALPHA_COLOR_SOLID);
+                error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_LIGHT_R, BOARD_COLOR_LIGHT_G, BOARD_COLOR_LIGHT_B, SDL_ALPHA_OPAQUE);
+                SDL_ERROR_CHECK(error);
+
             }
             else
             {
                 // Dark BG
-                error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_DARK_R, BOARD_COLOR_DARK_G, BOARD_COLOR_DARK_B, ALPHA_COLOR_SOLID);
-            }
-
-            if (error)
-            {
-                throw std::runtime_error(SDL_GetError());
+                error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_DARK_R, BOARD_COLOR_DARK_G, BOARD_COLOR_DARK_B, SDL_ALPHA_OPAQUE);
+                SDL_ERROR_CHECK(error);
             }
 
             error = SDL_RenderFillRect(renderer_, &rectangle);
+            SDL_ERROR_CHECK(error);
 
-            if (error)
+            // Highlight possible moves if moving piece
+            const auto find = std::find(possible_moves.begin(), possible_moves.end(), Position(column, row));
+            if (find != possible_moves.end())
             {
-                throw std::runtime_error(SDL_GetError());
-            }
+                // Semi transparent BG
+                error = SDL_SetRenderDrawColor(renderer_, POSSIBLE_MOVE_COLOR_R, POSSIBLE_MOVE_COLOR_G, POSSIBLE_MOVE_COLOR_B, ALPHA_COLOR_SEMI);
+                SDL_ERROR_CHECK(error);
+
+                error = SDL_RenderFillRect(renderer_, &rectangle);
+                SDL_ERROR_CHECK(error);
+            } 
 
             // Piece on board
             const auto& piece = board_[row][column];
             if (piece != nullptr)
             {
                 error = SDL_RenderCopy(renderer_, piece->GetTexture(), nullptr, &rectangle);
-
-                if (error)
-                {
-                    throw std::runtime_error(SDL_GetError());
-                }
+                SDL_ERROR_CHECK(error);
             }
         }
 
         // Selected piece
         if (selected_piece_ != nullptr)
         {
+            // Highlight selected piece
+            const auto& selected_piece_position = selected_piece_->GetPosition();
+            rectangle.x = selected_piece_position.column * POSITION_WIDTH;
+            rectangle.y = selected_piece_position.row * POSITION_HEIGHT;
+
+            // Semi transparent BG
+            error = SDL_SetRenderDrawColor(renderer_, POSSIBLE_MOVE_COLOR_R, POSSIBLE_MOVE_COLOR_G, POSSIBLE_MOVE_COLOR_B, ALPHA_COLOR_SEMI);
+            SDL_ERROR_CHECK(error);
+
+            error = SDL_RenderFillRect(renderer_, &rectangle);
+            SDL_ERROR_CHECK(error);
+
             SDL_GetMouseState(&rectangle.x, &rectangle.y);
 
             // Move mouse in the middle
@@ -264,20 +294,12 @@ void Game::RenderBoard()
             rectangle.y -= POSITION_HEIGHT / 2;
 
             // Transparent BG
-            error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_TRANSPARENT_R, BOARD_COLOR_TRANSPARENT_G, BOARD_COLOR_TRANSPARENT_B, ALPHA_COLOR_TRANSPARENT);
-
-            if (error)
-            {
-                throw std::runtime_error(SDL_GetError());
-            }
+            error = SDL_SetRenderDrawColor(renderer_, BOARD_COLOR_TRANSPARENT_R, BOARD_COLOR_TRANSPARENT_G, BOARD_COLOR_TRANSPARENT_B, SDL_ALPHA_TRANSPARENT);
+            SDL_ERROR_CHECK(error);
 
             // Piece texture
             error = SDL_RenderCopy(renderer_, selected_piece_->GetTexture(), nullptr, &rectangle);
-
-            if (error)
-            {
-                throw std::runtime_error(SDL_GetError());
-            }
+            SDL_ERROR_CHECK(error);
         }
     }
 
@@ -302,15 +324,12 @@ void Game::OnMousePressed(const SDL_Event& event)
 {
     if (event.button.button == SDL_BUTTON_LEFT)
     {
-        current_position_ = { event.button.x / POSITION_WIDTH, event.button.y / POSITION_HEIGHT };
-        std::cout << "current=[" << current_position_.column<< ", " << current_position_.row << "]" << '\n';
+        const auto column = event.button.x / POSITION_WIDTH;
+        const auto row = event.button.y / POSITION_HEIGHT;
 
-        selected_piece_ = std::move(board_[current_position_.row][current_position_.column]);
+        std::cout << "selected=[" << column << ", " << row << "]" << '\n';
 
-        if (selected_piece_ != nullptr)
-        {
-            std::cout << "selected=[" << selected_piece_->GetPosition().column << ", " << selected_piece_->GetPosition().row << "]" << '\n';
-        }
+        selected_piece_ = std::move(board_[row][column]);
     }
 }
 
@@ -322,10 +341,12 @@ void Game::OnMouseReleased(const SDL_Event& event)
     {
         if (selected_piece_ != nullptr)
         {
-            Position new_position{ event.button.x / POSITION_WIDTH, event.button.y / POSITION_HEIGHT };
+            const Position new_position{ event.button.x / POSITION_WIDTH, event.button.y / POSITION_HEIGHT };
             std::cout << "new=[" << new_position.column << ", " << new_position.row << "]" << '\n';
 
-            if (CanMove(current_position_, new_position))
+            const auto& old_position = selected_piece_->GetPosition();
+
+            if (CanMove(old_position, new_position))
             {
                 // Set piece to new position
                 selected_piece_->SetPosition(new_position);
@@ -340,7 +361,6 @@ void Game::OnMouseReleased(const SDL_Event& event)
             else
             {
                 // Set piece to old position
-                const auto old_position = selected_piece_->GetPosition();
                 selected_piece_->SetPosition(new_position);
                 board_[old_position.row][old_position.column] = std::move(selected_piece_);
             }
@@ -353,12 +373,12 @@ bool Game::isRunning() const
     return is_running_;
 }
 
-const ChessBoard& Game::GetBoard() const
+const vector<vector<shared_ptr<Piece>>>& Game::GetBoard() const
 {
     return board_;
 }
 
-ChessBoard& Game::GetBoard()
+vector<vector<shared_ptr<Piece>>>& Game::GetBoard()
 {
     return board_;
 }
@@ -381,16 +401,6 @@ Piece& Game::GetPiece(const Position& position)
     }
 
     return *board_[position.column][position.row].get();
-}
-
-const Position& Game::GetCurrentPosition() const
-{
-    return current_position_;
-}
-
-Position& Game::GetCurrentPosition()
-{
-    return current_position_;
 }
 
 shared_ptr<Piece> Game::createPieceFromChar(char c) const

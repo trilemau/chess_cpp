@@ -12,7 +12,7 @@ Knight::Knight(PieceColor piece_color, SDL_Renderer* renderer, const string& tex
 
 }
 
-std::vector<Position> Knight::LegalMoves() const
+std::vector<Position> Knight::GetLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const
 {
     std::vector<Position> legal_moves;
     const auto& position = GetPosition();
@@ -21,3 +21,14 @@ std::vector<Position> Knight::LegalMoves() const
 
     return legal_moves;
 }
+
+std::vector<Position> Knight::GetPseudoLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const
+{
+    std::vector<Position> legal_moves;
+    const auto& position = GetPosition();
+
+    // TODO
+
+    return legal_moves;
+}
+

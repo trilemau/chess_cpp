@@ -5,6 +5,7 @@ Piece::Piece(PieceType piece_type, PieceColor piece_color)
     , piece_color_(piece_color)
     , position_(0, 0) // TODO not correct
     , texture_loaded_(false)
+    , texture_(nullptr)
 {
 
 }

@@ -5,9 +5,8 @@
 #include "position.hpp"
 
 class Piece;
-class Position;
+struct Position;
 
-typedef vector<vector<shared_ptr<Piece>>> ChessBoard;
 
 class Game
 {
@@ -18,21 +17,12 @@ class Game
     SDL_Renderer* renderer_;
     Mix_Chunk* move_piece_sfx_;
 
-    set<shared_ptr<Piece>> pieces_player1;
-    set<shared_ptr<Piece>> pieces_player2;
-
-    set<shared_ptr<Piece>> captured_pieces_player1;
+    set<shared_ptr<Piece>> captured_pieces_player1; // TODO implement captured pieces
     set<shared_ptr<Piece>> captured_pieces_player2;
 
     shared_ptr<Piece> selected_piece_;
-    Position mouse_position_;
 
-    ChessBoard board_;
-    Position current_position_;
-
-    // TODO use Position.class
-    int old_column_index = 0;
-    int old_row_index = 0;
+    vector<vector<shared_ptr<Piece>>> board_;
 
 public:
     Game();
@@ -55,14 +45,11 @@ public:
     // States
     bool isRunning() const;
 
-    const ChessBoard& GetBoard() const;
-    ChessBoard& GetBoard();
+    const vector<vector<shared_ptr<Piece>>>& GetBoard() const;
+    vector<vector<shared_ptr<Piece>>>& GetBoard();
 
     const Piece& GetPiece(const Position& position) const;
     Piece& GetPiece(const Position& position);
-
-    const Position& GetCurrentPosition() const;
-    Position& GetCurrentPosition();
 
 private:
     shared_ptr<Piece> createPieceFromChar(char c) const;

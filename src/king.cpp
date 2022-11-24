@@ -12,30 +12,54 @@ King::King(PieceColor piece_color, SDL_Renderer* renderer, const string& texture
 
 }
 
-std::vector<Position> King::LegalMoves() const
+std::vector<Position> King::GetLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const
 {
-    std::vector<Position> legal_moves;
+    auto pseudo_legal_moves = GetPseudoLegalMoves(board);
     const auto& position = GetPosition();
 
-    for (auto column = position.column - 1; column <= position.column + 1; column++)
-    {
-        for (auto row = position.row - 1; row <= position.row + 1; row++)
-        {
-            // Do not add current position of king
-            if (column == position.column && row == position.row)
-            {
-                continue;
-            }
+    // TODO checks
 
-            // Remove positions outside board
-            if (column < 0 || column >= BOARD_WIDTH || row < 0 || row >= BOARD_HEIGHT)
-            {
-                continue;
-            }
-
-            legal_moves.emplace_back(column, row);
-        }
-    }
-
-    return legal_moves;
+    return GetPseudoLegalMoves(board);
 }
+
+std::vector<Position> King::GetPseudoLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const
+{
+    std::vector<Position> pseudo_legal_moves;
+    std::vector<Position> output;
+    const auto& position = GetPosition();
+
+    // Top
+    pseudo_legal_moves.emplace_back(Position(position.column - 1, position.row - 1));
+    pseudo_legal_moves.emplace_back(Position(position.column, position.row - 1));
+    pseudo_legal_moves.emplace_back(Position(position.column + 1, position.row - 1));
+
+    // Middle
+    pseudo_legal_moves.emplace_back(Position(position.column - 1, position.row));
+    pseudo_legal_moves.emplace_back(Position(position.column + 1, position.row));
+
+    // Bottom
+    pseudo_legal_moves.emplace_back(Position(position.column - 1, position.row + 1));
+    pseudo_legal_moves.emplace_back(Position(position.column, position.row + 1));
+    pseudo_legal_moves.emplace_back(Position(position.column + 1, position.row + 1));
+
+    // Filter invalid positions
+    std::copy_if(pseudo_legal_moves.begin(), pseudo_legal_moves.end(), std::back_inserter(output), [&board](const Position& position)
+        {
+            // Remove invalid positions
+            if (position.column >= BOARD_WIDTH || position.column < 0 || position.row >= BOARD_HEIGHT || position.row < 0)
+            {
+                return false;
+            }
+
+            // Remove ally positions
+            if (board[position.row][position.column] != nullptr)
+            {
+                return false;
+            }
+
+            return true;
+        });
+
+    return output;
+}
+
