@@ -28,27 +28,90 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     std::vector<Position> output;
     const auto& position = GetPosition();
 
-    pseudo_legal_moves.emplace_back(Position(position.column, position.row + 1));
+    auto column = position.column;
+    auto row = position.row;
 
-    for (auto column = 0; column < BOARD_WIDTH; column++)
+
+    // TODO stop at piece
+    // diagonal "/" down to up
+    while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
     {
-        for (auto row = 0; row < BOARD_HEIGHT; row++)
-        {
-            // diagonals TODO
+        column++;
+        row--;
+        pseudo_legal_moves.emplace_back(Position(column, row));
+    }
 
+    column = position.column;
+    row = position.row;
 
-            // vertical
-            if (row == position.row)
-            {
-                pseudo_legal_moves.emplace_back(Position(column, row));
-            }
+    // diagonal "/" up to down
+    while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
+    {
+        column--;
+        row++;
+        pseudo_legal_moves.emplace_back(Position(column, row));
+    }
 
-            // horizontal
-            if (column == position.column)
-            {
-                pseudo_legal_moves.emplace_back(Position(column, row));
-            }
-        }
+    column = position.column;
+    row = position.row;
+
+    // diagonal "\" down to up
+    while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
+    {
+        column++;
+        row++;
+        pseudo_legal_moves.emplace_back(Position(column, row));
+    }
+
+    column = position.column;
+    row = position.row;
+
+    // diagonal "\" up to down
+    while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
+    {
+        column--;
+        row--;
+        pseudo_legal_moves.emplace_back(Position(column, row));
+    }
+
+    column = position.column;
+    row = position.row;
+
+    // horizontal "-" left
+    while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
+    {
+        column--;
+        pseudo_legal_moves.emplace_back(Position(column, row));
+    }
+
+    column = position.column;
+    row = position.row;
+
+    // horizontal "-" right
+    while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
+    {
+        column++;
+        pseudo_legal_moves.emplace_back(Position(column, row));
+    }
+
+    column = position.column;
+    row = position.row;
+
+    // vertical "-" up
+    while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
+    {
+        row--;
+        pseudo_legal_moves.emplace_back(Position(column, row));
+    }
+
+    column = position.column;
+    row = position.row;
+
+    // vertical "-" down
+    while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
+    {
+        row++;
+        pseudo_legal_moves.emplace_back(Position(column, row));
     }
     
     // Filter invalid positions // TODO move to function
