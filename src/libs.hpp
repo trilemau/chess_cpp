@@ -9,7 +9,6 @@
 #include <exception>
 #include <string>
 #include <set>
-#include <ranges>
 
 // Custom headers
 #include "enums.hpp"
