@@ -31,13 +31,24 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     auto column = position.column;
     auto row = position.row;
 
-
-    // TODO stop at piece
+    // TODO refactor
+    
     // diagonal "/" down to up
     while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
     {
         column++;
         row--;
+
+        if (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH && board[row][column])
+        {
+            if (board[row][column] && GetPieceColor() != board[row][column]->GetPieceColor())
+            {
+                pseudo_legal_moves.emplace_back(Position(column, row));
+            }
+
+            break;
+        }
+
         pseudo_legal_moves.emplace_back(Position(column, row));
     }
 
@@ -49,6 +60,17 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     {
         column--;
         row++;
+
+        if (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH && board[row][column])
+        {
+            if (board[row][column] && GetPieceColor() != board[row][column]->GetPieceColor())
+            {
+                pseudo_legal_moves.emplace_back(Position(column, row));
+            }
+
+            break;
+        }
+        
         pseudo_legal_moves.emplace_back(Position(column, row));
     }
 
@@ -60,6 +82,17 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     {
         column++;
         row++;
+
+        if (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH && board[row][column] )
+        {
+            if (board[row][column] && GetPieceColor() != board[row][column]->GetPieceColor())
+            {
+                pseudo_legal_moves.emplace_back(Position(column, row));
+            }
+
+            break;
+        }
+
         pseudo_legal_moves.emplace_back(Position(column, row));
     }
 
@@ -71,6 +104,17 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     {
         column--;
         row--;
+
+        if (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH && board[row][column])
+        {
+            if (board[row][column] && GetPieceColor() != board[row][column]->GetPieceColor())
+            {
+                pseudo_legal_moves.emplace_back(Position(column, row));
+            }
+
+            break;
+        }
+
         pseudo_legal_moves.emplace_back(Position(column, row));
     }
 
@@ -81,6 +125,17 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
     {
         column--;
+
+        if (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH && board[row][column])
+        {
+            if (board[row][column] && GetPieceColor() != board[row][column]->GetPieceColor())
+            {
+                pseudo_legal_moves.emplace_back(Position(column, row));
+            }
+
+            break;
+        }
+
         pseudo_legal_moves.emplace_back(Position(column, row));
     }
 
@@ -91,6 +146,17 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
     {
         column++;
+
+        if (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH && board[row][column])
+        {
+            if (board[row][column] && GetPieceColor() != board[row][column]->GetPieceColor())
+            {
+                pseudo_legal_moves.emplace_back(Position(column, row));
+            }
+
+            break;
+        }
+
         pseudo_legal_moves.emplace_back(Position(column, row));
     }
 
@@ -101,6 +167,17 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
     {
         row--;
+
+        if (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH && board[row][column])
+        {
+            if (board[row][column] && GetPieceColor() != board[row][column]->GetPieceColor())
+            {
+                pseudo_legal_moves.emplace_back(Position(column, row));
+            }
+
+            break;
+        }
+
         pseudo_legal_moves.emplace_back(Position(column, row));
     }
 
@@ -111,6 +188,17 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
     while (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH)
     {
         row++;
+        
+        if (row >= 0 && row < BOARD_HEIGHT && column >= 0 && column < BOARD_WIDTH && board[row][column])
+        {
+            if (board[row][column] && GetPieceColor() != board[row][column]->GetPieceColor())
+            {
+                pseudo_legal_moves.emplace_back(Position(column, row));
+            }
+
+            break;
+        }
+        
         pseudo_legal_moves.emplace_back(Position(column, row));
     }
     
