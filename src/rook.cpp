@@ -138,3 +138,10 @@ std::vector<Position> Rook::GetPseudoLegalMoves(const vector<vector<shared_ptr<P
 
     return output;
 }
+
+std::vector<Position> Rook::GetAttackingMoves(const vector<vector<shared_ptr<Piece>>>& board) const
+{
+    std::vector<Position> output;
+
+    return output;
+}

@@ -31,4 +31,5 @@ public:
 
     virtual std::vector<Position> GetLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const = 0;
     virtual std::vector<Position> GetPseudoLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const = 0;
+    virtual std::vector<Position> GetAttackingMoves(const vector<vector<shared_ptr<Piece>>>& board) const = 0;
 };

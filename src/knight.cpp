@@ -64,3 +64,9 @@ std::vector<Position> Knight::GetPseudoLegalMoves(const vector<vector<shared_ptr
     return output;
 }
 
+std::vector<Position> Knight::GetAttackingMoves(const vector<vector<shared_ptr<Piece>>>& board) const
+{
+    std::vector<Position> output;
+
+    return output;
+}

@@ -12,4 +12,5 @@ public:
 
 	std::vector<Position> GetLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const override;
 	std::vector<Position> GetPseudoLegalMoves(const vector<vector<shared_ptr<Piece>>>& board) const override;
+    std::vector<Position> GetAttackingMoves(const vector<vector<shared_ptr<Piece>>>& board) const override;
 };

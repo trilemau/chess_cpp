@@ -20,6 +20,7 @@ std::vector<Position> Pawn::GetLegalMoves(const vector<vector<shared_ptr<Piece>>
     const auto& position = GetPosition();
 
     // TODO
+    // capture in diagonals
 
     return GetPseudoLegalMoves(board);
 }
@@ -73,3 +74,9 @@ std::vector<Position> Pawn::GetPseudoLegalMoves(const vector<vector<shared_ptr<P
     return output;
 }
 
+std::vector<Position> Pawn::GetAttackingMoves(const vector<vector<shared_ptr<Piece>>>& board) const
+{
+    std::vector<Position> output;
+
+    return output;
+}

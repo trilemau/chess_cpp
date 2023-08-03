@@ -14,3 +14,8 @@ struct Position
 
     string ToString() const;
 };
+
+struct PositionHash
+{
+    size_t operator()(const Position& position) const;
+};

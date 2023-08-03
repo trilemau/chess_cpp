@@ -223,3 +223,10 @@ std::vector<Position> Queen::GetPseudoLegalMoves(const vector<vector<shared_ptr<
 
     return output;
 }
+
+std::vector<Position> Queen::GetAttackingMoves(const vector<vector<shared_ptr<Piece>>>& board) const
+{
+    std::vector<Position> output;
+
+    return output;
+}
